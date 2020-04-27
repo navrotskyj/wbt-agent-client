@@ -10,9 +10,20 @@
             <v-card-text>
                 <video v-if="call.peerStreams" :srcObject.prop="call.peerStreams[0]" autoplay />
                 <v-container fluid>
+                    <v-row>
+                        <v-col cols="12" >
+                            <span class="headline">Variables</span>
+                            <v-text-field disabled v-for="(k, v) in call.variables"
+                                          :label="k"
+                                          :value="v"
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+
                     <v-form ref="form"
                             v-model="valid" v-if="call.postProcessData">
                         <v-row>
+
                             <v-col cols="6" sm="6">
                                 <span class="headline">Member</span>
                                 <v-text-field disabled
@@ -30,13 +41,7 @@
                                 ></v-text-field>
                             </v-col>
 
-                            <v-col cols="6" sm="6">
-                                <span class="headline">Variables</span>
-                                <v-text-field disabled v-for="(k, v) in call.variables"
-                                              :label="k"
-                                              :value="v"
-                                ></v-text-field>
-                            </v-col>
+
                         </v-row>
 
                         <v-row v-if="call.allowReporting">

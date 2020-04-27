@@ -63,11 +63,30 @@
         <v-content app>
             <slot/>
         </v-content>
+
+        <v-btn
+                bottom
+                color="success"
+                dark
+                fab
+                fixed
+                right
+                @click="dialog = !dialog"
+        >
+            <v-icon>mdi-phone</v-icon>
+        </v-btn>
+        <v-dialog
+                v-model="dialog"
+                width="800px"
+        >
+            <CreateCall></CreateCall>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
     import Agent from '../components/agent'
+    import CreateCall from '../components/createCall'
 
     function compare(a, b) {
         if (a.createdAt > b.createdAt) return -1;
@@ -76,10 +95,13 @@
         return 0;
     }
 
+
+
     export default {
         name: "default",
         components: {
-            Agent
+            Agent,
+            CreateCall
         },
         data: () => ({
             drawer: true
@@ -88,6 +110,14 @@
 
         },
         computed: {
+            dialog: {
+                set(v) {
+                    this.$store.commit( 'showNewCall', v)
+                },
+                get() {
+                    return this.$store.getters['dialogCall'];
+                }
+            },
             callList() {
                 return this.$store.getters.callList.sort(compare);
             }

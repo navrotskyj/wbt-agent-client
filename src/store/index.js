@@ -10,7 +10,8 @@ const Store = new Vuex.Store({
     // strict: true,
     state: {
         layout: 'default-layout',
-        client: null
+        client: null,
+        dialogCall: false
     },
     modules: {
         call: callStore,
@@ -19,6 +20,9 @@ const Store = new Vuex.Store({
     getters: {
         layout(state) {
             return state.layout
+        },
+        dialogCall(state) {
+            return state.dialogCall
         },
         status(state) {
             return state.layout
@@ -33,9 +37,24 @@ const Store = new Vuex.Store({
         },
         setClient(state, client) {
             state.client = client
+        },
+        showNewCall(state, val) {
+            state.dialogCall = val
         }
     },
     actions: {
+        async makeCall({ commit, state }, {destination, variables, useVideo, useScreen}) {
+            if (state.client) {
+                return state.client.invite({
+                    destination,
+                    params: {
+                        video: useVideo,
+                        variables
+                    }
+                })
+            }
+            throw "Not register";
+        },
         existsCall({commit, state}, callId) {
             if (!state.client) {
                 return false

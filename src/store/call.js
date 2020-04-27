@@ -8,6 +8,10 @@ const getters = {
     }
 };
 
+const actions = {
+
+}
+
 const mutations = {
     newCall(state, call) {
         state.items.push(call)
@@ -46,5 +50,6 @@ function str() {
 export default {
     getters,
     state,
-    mutations
+    mutations,
+    actions
 };

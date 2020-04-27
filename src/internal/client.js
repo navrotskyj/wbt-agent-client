@@ -54,9 +54,9 @@ export async function openSocket() {
     // console.table(res.data.items)
 
     client = new Client({
-        // endpoint: "wss://dev.webitel.com/ws",
+        endpoint: "wss://dev.webitel.com/ws",
         // endpoint: "ws://192.168.177.199/ws",
-        endpoint: "ws://10.10.10.25:10025",
+        // endpoint: "ws://10.10.10.25:10025",
         token,
         registerWebDevice: true,
         debug: true,
@@ -111,6 +111,11 @@ export async function openSocket() {
     for (const call of client.allCall()) {
         store.commit('newCall', call)
     }
+
+    /*
+        WrapTime -> Waiting
+        this.agent.waiting('call')
+     */
 
 
     try {
