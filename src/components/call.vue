@@ -31,10 +31,11 @@
             </v-btn>
             <v-btn v-if="call.allowReporting"
                    class="mr-4"
-                   color="primary"
+                   color="success"
                    @click="call.reporting(call.postProcessData)"
             >
-                Reporting
+                Next call
+                <v-icon>mdi-skip-forward-outline</v-icon>
             </v-btn>
             <v-btn text>Ban</v-btn>
             <v-btn text>Cancel</v-btn>
@@ -44,12 +45,56 @@
             <v-row no-gutters>
                 <v-col
                         cols="12"
-                        sm="4"
+                        sm="6"
                 >
                     <v-text-field disabled1 v-for="(v, k) in call.variables"
                                   :label="k"
                                   :value="v"
                     ></v-text-field>
+                </v-col>
+                <v-col
+                        cols="12"
+                        sm="6"
+                >
+                    <v-container>
+                        <h3 align="center">Success</h3>
+                        <v-row
+
+                                class="justify-center"
+                        >
+                            <v-radio-group v-model="success" row >
+                                <v-radio label="Yes" :value="true"></v-radio>
+                                <v-radio label="No" :value="false"></v-radio>
+                            </v-radio-group>
+                        </v-row>
+                    </v-container>
+
+                    <v-container fluid v-if="call.memberCommunication">
+                        <v-row align="center">
+                            <v-col class="d-flex" cols="12" sm="6">
+                                <v-text-field
+                                        :messages="['User display: ' + call.memberCommunication.display]"
+                                        :value="call.memberCommunication.destination"
+                                        label="Destination"
+                                ></v-text-field>
+                            </v-col>
+                            <v-col class="d-flex" cols="12" sm="6">
+                                <v-select
+                                        :items="['a']"
+                                        label="Type"
+                                ></v-select>
+                            </v-col>
+                        </v-row>
+                        <v-row align="center">
+                            <v-btn icon dense>
+                                <v-icon>mdi-plus</v-icon>
+                            </v-btn>
+                        </v-row>
+                    </v-container>
+
+                    <v-row align="center">
+
+                    </v-row>
                 </v-col>
             </v-row>
 
@@ -106,6 +151,7 @@
     export default {
         name: "call",
         data: () => ({
+            success: false,
             valid: true,
             menu1: false,
             menu2: false,

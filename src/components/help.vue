@@ -1,34 +1,59 @@
 <template>
-    <v-list two-line subheader>
-        <v-subheader inset>Agents</v-subheader>
-
-        <v-list-item
-                v-for="item in agents"
-                :key="item.id"
-                @click=""
+    <div>
+        <v-tabs
+                v-model="tab"
+                dark
         >
-            <v-list-item-avatar>
-                <v-icon large
-                        color="success"
-                >mdi-account-circle-outline</v-icon>
-            </v-list-item-avatar>
+            <v-tab
+                    v-for="item in tabs"
+                    :key="item.tab"
+            >
+                {{ item.tab }}
+            </v-tab>
+        </v-tabs>
 
-            <v-list-item-content>
-                <v-list-item-title v-text="item.name"></v-list-item-title>
-                <v-list-item-subtitle v-text="item.status"></v-list-item-subtitle>
-            </v-list-item-content>
+        <v-tabs-items v-model="tab">
+            <v-tab-item
+                    v-for="item in items"
+                    :key="item.tab"
+            >
+                <v-card flat>
+                    <v-card-text>{{ item.content }}</v-card-text>
+                </v-card>
+            </v-tab-item>
+        </v-tabs-items>
 
-            <v-list-item-action>
-                <v-btn icon>
-                    <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-            </v-list-item-action>
-        </v-list-item>
+        <v-list two-line subheader>
+            <v-subheader inset>Agents</v-subheader>
 
-        <v-divider inset></v-divider>
+            <v-list-item
+                    v-for="item in agents"
+                    :key="item.id"
+                    @click=""
+            >
+                <v-list-item-avatar>
+                    <v-icon large
+                            color="success"
+                    >mdi-account-circle-outline</v-icon>
+                </v-list-item-avatar>
 
-        <v-subheader inset>Supervisors</v-subheader>
-    </v-list>
+                <v-list-item-content>
+                    <v-list-item-title v-text="item.name"></v-list-item-title>
+                    <v-list-item-subtitle v-text="item.status"></v-list-item-subtitle>
+                </v-list-item-content>
+
+                <v-list-item-action>
+                    <v-btn icon>
+                        <v-icon color="grey lighten-1">mdi-information</v-icon>
+                    </v-btn>
+                </v-list-item-action>
+            </v-list-item>
+
+            <v-divider inset></v-divider>
+
+            <v-subheader inset>Supervisors</v-subheader>
+        </v-list>
+    </div>
 </template>
 
 <script>
@@ -38,7 +63,16 @@
         name: "help",
         data() {
             return {
-                agents: []
+                agents: [],
+                tab: 0,
+                tabs: [
+                    {
+                       "tab": "Friends"
+                    },
+                    {
+                       "tab": "Queue"
+                    }
+                ]
             }
         },
         async created() {

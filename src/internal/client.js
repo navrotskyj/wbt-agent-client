@@ -104,13 +104,7 @@ export async function openSocket() {
                 router.push({name: "call", params: {call, callId: call.id }})
                 break;
             case CallActions.Hangup:
-
-                if (!call.allowReporting || call.reportingAt > 0) {
-                    store.commit('removeCall', call)
-                    router.push({name: "main"})
-                } else {
-                    store.commit('updateCall', call)
-                }
+                store.commit('updateCall', call)
                 break
 
             case CallActions.Destroy:
