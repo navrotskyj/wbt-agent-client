@@ -3,6 +3,7 @@ import Main from  '../components/main'
 import Call from  '../components/call'
 import Test from  '../components/test'
 import Task from  '../components/task'
+import Email from  '../components/email'
 import Dashboard from  '../components/dashboard'
 
 const routes = [
@@ -19,12 +20,18 @@ const routes = [
     {
         path: '/call/:callId',
         name: 'call',
-        component: Call
+        component: Call,
+        props: (route) => ({ callId: route.params.callId, call: route.params.call })
     },
     {
         path: '/task/:callId',
         name: 'task',
         component: Task
+    },
+    {
+        path: '/email/:emailId',
+        name: 'email',
+        component: Email
     },
     {
         path: '/test',

@@ -1,7 +1,7 @@
 <template>
     <v-card>
-        <v-card-title class="grey darken-2">
-            Create call
+        <v-card-title >
+            Make call
         </v-card-title>
         <v-container>
             <v-row class="mx-2">

@@ -2,10 +2,17 @@
 
     <div>
         <span class="group pa-6 mr-12">
+            <v-btn icon dark class="mb-3 mr-8" :active="answerInbound" v-model="answerInbound" @click.stop="answerInbound = !answerInbound">
+                    <v-icon >mdi-virus</v-icon>
+                    <span class="wbt-chan-state caption">
+                        Auto answer
+                    </span>
+            </v-btn>
+
               <v-btn icon dark class="ma-4" :disabled="ch.disabled" :color="ch.color" v-on:click='setWaiting(ch.channel)' v-for="(ch, index) in channels" :key="index">
                     <v-badge
-                            :content="ch.opened"
-                            :value="ch.opened > 0"
+                            :content="ch.open"
+                            :value="ch.open > 0"
                     >
                         <v-icon style="margin-top: -14px;">{{ch.icon}}</v-icon>
                     </v-badge>
@@ -68,7 +75,8 @@
                 onDemand: false,
                 duration: '00:00:00',
                 interval: null,
-                emails: 0,
+                answerInbound: false,
+                emails: 10,
                 selectedStatus: {},
                 listAgentStatus: [
                     {title: 'Online', id: 'online', color: 'light-green accent-4'},

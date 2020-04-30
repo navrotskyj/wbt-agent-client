@@ -1,13 +1,11 @@
-import {Client, Configuration, MemberServiceApi, CallActions, CallServiceApi} from "../../webitel-sdk/src";
+import {Client, AgentServiceApi, Configuration, MemberServiceApi, QueueServiceApi, CallActions, CallServiceApi} from "../../webitel-sdk/src";
 
 import store from '../store'
 import router from '../router'
 import {AgentStatusEvent} from "../../webitel-sdk/src/socket/agent";
 
 export let client = null;
-
-
-const token = '8dmumctirfradmeebp4tbn4uro'
+const token = '99rsrm7skiggtd3ozd3afknofr'
 
 export const configuration = new Configuration({
     accessToken: token,//"xtmepawckpb3pct391699stbhe",
@@ -15,11 +13,30 @@ export const configuration = new Configuration({
 });
 
 export const memberApi = new MemberServiceApi(configuration)
-
-const api = new CallServiceApi(configuration)
-
+export const queueApi = new QueueServiceApi(configuration)
+export const agentApi = new AgentServiceApi(configuration)
+const callApi = new CallServiceApi(configuration)
 
 export async function openSocket() {
+
+    const queuesRes = await queueApi.searchQueue(1, 10, undefined, undefined, undefined, "+priority")
+    console.table(queuesRes.data.items)
+
+    //FIXME
+    // await memberApi.searchAttemptsHistory(
+    //     1,
+    //     20,
+    //     0,
+    //     Date.now() * 1000,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     123,
+    //     undefined,
+    //     undefined,
+    //     undefined,
+    //     "+joined_at",
+    // )
 
     /*
        * @param {number} [page]
@@ -54,12 +71,12 @@ export async function openSocket() {
     // console.table(res.data.items)
 
     client = new Client({
-        endpoint: "wss://dev.webitel.com/ws",
+        // endpoint: "wss://dev.webitel.com/ws",
         // endpoint: "ws://192.168.177.199/ws",
-        // endpoint: "ws://10.10.10.25:10025",
+        endpoint: "ws://10.10.10.25:10025",
         token,
         registerWebDevice: true,
-        debug: true,
+        debug: false,
     });
 
     window.cli = client;
@@ -84,8 +101,10 @@ export async function openSocket() {
                 }
 
                 store.commit('newCall', call)
+                router.push({name: "call", params: {call, callId: call.id }})
                 break;
             case CallActions.Hangup:
+
                 if (!call.allowReporting || call.reportingAt > 0) {
                     store.commit('removeCall', call)
                     router.push({name: "main"})
@@ -94,7 +113,7 @@ export async function openSocket() {
                 }
                 break
 
-            case CallActions.Reporting:
+            case CallActions.Destroy:
                 store.commit('removeCall', call)
                 router.push({name: "main"})
                 break;

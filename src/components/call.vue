@@ -1,128 +1,107 @@
 <template>
-    <v-container >
-        <v-card outlined>
+    <v-card class="mx-auto">
 
-            <v-card-title>
-                <span class="headline">{{call.displayName}}</span>
-            </v-card-title>
-            <v-card-subtitle class="pb-0">{{call.displayNumber}}</v-card-subtitle>
+        <v-list-item three-line>
+            <v-list-item-content>
+                <div  v-if="call.queue" class="overline mb-4">{{call.queue.queue_name}}</div>
+                <v-list-item-title class="headline mb-1">Client: {{call.displayName}}</v-list-item-title>
+                <v-list-item-subtitle>Phone: {{call.displayNumber}}</v-list-item-subtitle>
+            </v-list-item-content>
 
-            <v-card-text>
-                <video v-if="call.peerStreams" :srcObject.prop="call.peerStreams[0]" autoplay />
-                <v-container fluid>
-                    <v-row>
-                        <v-col cols="12" >
-                            <span class="headline">Variables</span>
-                            <v-text-field disabled v-for="(k, v) in call.variables"
-                                          :label="k"
-                                          :value="v"
-                            ></v-text-field>
-                        </v-col>
-                    </v-row>
+            <v-list-item-avatar
+                    tile
+                    size="80"
+                    color="grey"
+            ></v-list-item-avatar>
+        </v-list-item>
 
-                    <v-form ref="form"
-                            v-model="valid" v-if="call.postProcessData">
-                        <v-row>
+        <v-card-actions>
+            <v-btn color="error"  v-show="call.allowHangup" @click="call.hangup()">
+                <v-icon>mdi-phone-hangup</v-icon>hangup
+            </v-btn>
 
-                            <v-col cols="6" sm="6">
-                                <span class="headline">Member</span>
-                                <v-text-field disabled
-                                              label="Name"
-                                              :value="call.postProcessData.name"
-                                ></v-text-field>
-                                <v-text-field disabled
-                                              label="Queue"
-                                              :value="call.queue.queue_name"
-                                ></v-text-field>
+            <v-btn color="warning"  v-show="call.allowHold" @click="call.hold()" >
+                <v-icon>mdi-phone-paused</v-icon>hold
+            </v-btn>
+            <v-btn color="success" v-show="call.allowUnHold" @click="call.unHold()">
+                <v-icon>mdi-phone-paused-outline</v-icon>active
+            </v-btn>
+            <v-btn color="success" v-show="call.allowAnswer" @click="call.answer({video: true})" >
+                <v-icon>mdi-phone-incoming</v-icon>answer
+            </v-btn>
+            <v-btn v-if="call.allowReporting"
+                   class="mr-4"
+                   color="primary"
+                   @click="call.reporting(call.postProcessData)"
+            >
+                Reporting
+            </v-btn>
+            <v-btn text>Ban</v-btn>
+            <v-btn text>Cancel</v-btn>
+        </v-card-actions>
 
-                                <v-text-field disabled
-                                              label="Last activity at"
-                                              :value="new Date(call.postProcessData.last_activity_at * 1000).toLocaleString()"
-                                ></v-text-field>
-                            </v-col>
+        <v-card-text>
+            <v-row no-gutters>
+                <v-col
+                        cols="12"
+                        sm="4"
+                >
+                    <v-text-field disabled1 v-for="(v, k) in call.variables"
+                                  :label="k"
+                                  :value="v"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+
+            <v-row v-if="call.allowReporting" no-gutters>
+                <v-textarea
+                        v-model="call.postProcessData.description"
+                        label="Description"
+                ></v-textarea>
+            </v-row>
+
+            <v-timeline>
+
+                <v-timeline-item
+                        color="green lighten-1"
+                        left
+                        v-for="(v, k) in history"
+                >
+                    <template v-slot:opposite>
+        <span
+                :class="`headline font-weight-bold`"
+        >{{new Date(+v.joined_at).toLocaleString()}}</span>
+                    </template>
+                    <v-card>
+                        <v-card-title class="green lighten-1">
+                            <v-icon
+                                    class="mr-4"
+                                    dark
+                                    size="42"
+                            >
+                                mdi-phone-in-talk
+                            </v-icon>
+                            <h2 class="display-1 white--text font-weight-light">
+                                {{v.destination.destination}}
+                            </h2>
+                        </v-card-title>
 
 
-                        </v-row>
+                    </v-card>
+                </v-timeline-item>
+            </v-timeline>
 
-                        <v-row v-if="call.allowReporting">
-                            <v-col cols="6" sm="6" >
-                                <span class="headline">Post processing</span>
+            <audio v-if="call.peerStreams" :srcObject.prop="call.peerStreams[0]" autoplay />
+        </v-card-text>
 
-                                <v-select
-                                        v-model="call.postProcessData.status"
-                                        :items="['auto', 'success', 'cancel']"
-                                        menu-props="auto"
-                                        label="Status"
-                                ></v-select>
 
-                                <v-menu
-                                        ref="menu1"
-                                        v-model="menu1"
-                                        :close-on-content-click="false"
-                                        transition="scale-transition"
-                                        offset-y
-                                        max-width="290px"
-                                        min-width="290px"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <v-text-field
-                                                v-model="call.postProcessData.next_call"
-                                                label="Nex call"
-                                                v-on="on"
-                                        ></v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="call.postProcessData.next_call" no-title @input="menu1 = false"></v-date-picker>
-                                </v-menu>
-                            </v-col>
-                            <v-col cols="6" sm="6" class="pt-9">
-                                <v-switch v-model="call.postProcessData.display" class="ma-4" label="Set display ?"></v-switch>
 
-                                <v-menu
-                                        ref="menu2"
-                                        v-model="menu2"
-                                        :close-on-content-click="false"
-                                        transition="scale-transition"
-                                        offset-y
-                                        max-width="290px"
-                                        min-width="290px"
-                                >
-                                    <template v-slot:activator="{ on }">
-                                        <v-text-field
-                                                v-model="call.postProcessData.expire"
-                                                label="Expire"
-                                                persistent-hint
-                                                v-on="on"
-                                        ></v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="call.postProcessData.next_call" no-title @input="menu2 = false"></v-date-picker>
-                                </v-menu>
-
-                            </v-col>
-
-                            <v-col cols="12">
-                                <v-textarea
-                                        v-model="call.postProcessData.description"
-                                        label="Description"
-                                ></v-textarea>
-                            </v-col>
-                        </v-row>
-
-                        <v-btn v-if="call.allowReporting"
-                                class="mr-4"
-                                @click="call.reporting(call.postProcessData.status)"
-                        >
-                            Reporting
-                        </v-btn>
-                    </v-form>
-
-                </v-container>
-            </v-card-text>
-
-        </v-card>
-    </v-container>
+    </v-card>
 </template>
 
 <script>
+
+    import {memberApi} from '../internal/client'
 
     export default {
         name: "call",
@@ -130,6 +109,7 @@
             valid: true,
             menu1: false,
             menu2: false,
+            history: [],
             nameRules: [
                 v => !!v || 'Name is required',
                 v => (v && v.length <= 10) || 'Name must be less than 10 characters',
@@ -151,6 +131,15 @@
             member: null
         }),
 
+        props: {
+            callId: String,
+            call: Object
+        },
+        async created() {
+            // загружаем данные, когда представление создано
+            // и данные реактивно отслеживаются
+            await this.fetchData()
+        },
         methods: {
             validate () {
                 this.$refs.form.validate()
@@ -161,20 +150,33 @@
             resetValidation () {
                 this.$refs.form.resetValidation()
             },
-        },
-        computed: {
-            call() {
-                return this.$route.params.call
-            },
-        },
-        created() {
+            async fetchData() {
+                if (!this.call || !this.call.queue) {
+                    this.history = []
 
-        },
-        async beforeCreate() {
-            const exists = await this.$store.dispatch('existsCall', this.$route.params.callId)
-            if (!exists) {
-                this.$router.go(-1)
+                    return
+                }
+
+                const res = await memberApi.searchAttemptsHistory(
+                    1,
+                    20,
+                    0,
+                    Date.now() * 1000,
+                    undefined,
+                    undefined,
+                    undefined,
+                    this.call.queue.member_id,
+                    undefined,
+                    undefined,
+                    undefined,
+                    "+joined_at",
+                )
+                this.history = res.data.items
             }
+        },
+        watch: {
+            // при изменениях маршрута запрашиваем данные снова
+            $route: 'fetchData'
         },
     }
 </script>

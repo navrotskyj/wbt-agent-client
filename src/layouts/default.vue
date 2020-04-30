@@ -1,5 +1,6 @@
 <template>
     <v-app>
+
         <v-navigation-drawer width="350" v-model="drawer" app :clipped="$vuetify.breakpoint.lgAndUp">
 
             <v-card class="mx-auto"
@@ -14,10 +15,10 @@
                 </v-list-item>
             </v-card>
 
-            <v-card v-for="(call, index) in callList" :to="{ name: 'call', params: {call: call, callId: call.id }}" :key="`call-${index}`"
+            <v-list-item-group v-model="sel">
+            <v-card v-for="(call, index) in callList" active :to="{ name: 'call', params: {call: call, callId: call.id }}" :key="`call-${index}`"
                     class="mx-auto"
                     max-width="344"
-                    outlined
             >
                 <v-list-item three-line >
                     <v-list-item-icon>
@@ -30,27 +31,17 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-card-actions class="wbt-list-btn-groups">
-
-                    <v-btn color="error"  v-show="call.allowHangup" @click="call.hangup()">
-                        <v-icon>mdi-phone-hangup</v-icon>hangup
-                    </v-btn>
-
-                    <v-btn color="warning"  v-show="call.allowHold" @click="call.hold()" >
-                        <v-icon>mdi-phone-paused</v-icon>hold
-                    </v-btn>
-                    <v-btn color="success" v-show="call.allowUnHold" @click="call.unHold()">
-                        <v-icon>mdi-phone-paused-outline</v-icon>active
-                    </v-btn>
-                    <v-btn color="success" v-show="call.allowAnswer" @click="call.answer({video: true})" >
-                        <v-icon>mdi-phone-incoming</v-icon>answer
-                    </v-btn>
-
-                </v-card-actions>
+                <!--<v-card-actions class="wbt-list-btn-groups">-->
+                <!--</v-card-actions>-->
             </v-card>
+            </v-list-item-group>
         </v-navigation-drawer>
 
-        <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" app class="wbt-bar white--text">
+        <v-navigation-drawer width="350" right v-model="right" app clipped>
+            <Help></Help>
+        </v-navigation-drawer>
+
+        <v-app-bar :clipped-left="$vuetify.breakpoint.lgAndUp" clipped-right app class="wbt-bar white--text">
             <v-toolbar-title>
                 <v-app-bar-nav-icon class="white--text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             </v-toolbar-title>
@@ -58,10 +49,15 @@
             <v-spacer></v-spacer>
 
             <Agent></Agent>
+            <v-btn icon class="white--text ml-6" @click.stop="right = !right">
+                <v-icon>mdi-help</v-icon>
+            </v-btn>
         </v-app-bar>
 
         <v-content app>
-            <slot/>
+            <transition>
+                <slot/>
+            </transition>
         </v-content>
 
         <v-btn
@@ -87,6 +83,7 @@
 <script>
     import Agent from '../components/agent'
     import CreateCall from '../components/createCall'
+    import Help from '../components/help'
 
     function compare(a, b) {
         if (a.createdAt > b.createdAt) return -1;
@@ -101,10 +98,13 @@
         name: "default",
         components: {
             Agent,
-            CreateCall
+            CreateCall,
+            Help,
         },
         data: () => ({
-            drawer: true
+            drawer: true,
+            right: false,
+            sel: null,
         }),
         created() {
 
