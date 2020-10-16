@@ -1,0 +1,1792 @@
+[
+  {
+    "ringReady": ""
+  },
+  {
+    "preAnswer": ""
+  },
+  {
+    "ringback": {
+      "call": {
+        "name": "%(2000,4000,440,480)",
+        "type": "tone"
+      },
+      "hold": {
+        "name": "%(2000,4000,440,480)",
+        "type": "tone"
+      },
+      "transfer": {
+        "name": "%(2000,4000,440,480)",
+        "type": "tone"
+      }
+    }
+  },
+  {
+    "answer": ""
+  },
+  {
+    "recordSession": {
+      "action": "start",
+      "bridged": false,
+      "followTransfer": true,
+      "minSec": 2,
+      "stereo": true,
+      "type": "mp3"
+    }
+  },
+  {
+    "trigger": {
+      "disconnected": [
+        {
+          "log": "DISCONNECTED ${caller_id_number}"
+        },
+        {
+          "if": {
+            "expression": "${callback} == '1'",
+            "then": [
+              {
+                "httpRequest": {
+                  "data": {
+                    "Properties": [
+                      {
+                        "Key": "OmniFromPhone",
+                        "Value": "${caller_id_number}"
+                      },
+                      {
+                        "Key": "OmniToPhone",
+                        "Value": "${did}"
+                      },
+                      {
+                        "Key": "OmniActivityTopic",
+                        "Value": "${ivr_question_1}"
+                      }
+                    ]
+                  },
+                  "exportCookie": "",
+                  "exportVariables": {},
+                  "headers": {},
+                  "method": "POST",
+                  "path": {},
+                  "responseCode": "",
+                  "timeout": 500,
+                  "url": "http://speech.olp.site:4055/callback"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "set": {
+      "did": "${destination_number}"
+    }
+  },
+  {
+    "if": {
+      "else": [
+        {
+          "set": {
+            "did": "7343226111111"
+          }
+        }
+      ],
+      "expression": "${did} == '101526'",
+      "then": [
+        {
+          "set": {
+            "did": "73432264112"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "log": "log111111111111111111111111 ${did}"
+  },
+  {
+    "export": [
+      "did"
+    ]
+  },
+  {
+    "httpRequest": {
+      "data": {
+        "calledid": "${did}",
+        "callerid": "${caller_id_number}"
+      },
+      "exportCookie": "",
+      "exportVariables": {},
+      "headers": {},
+      "method": "POST",
+      "path": {},
+      "responseCode": "",
+      "timeout": 1000,
+      "url": "http://speech.olp.site:4055/satisfaction"
+    }
+  },
+  {
+    "calendar": {
+      "name": "week_23_24",
+      "setVar": "isWorkDay_23_24"
+    }
+  },
+  {
+    "calendar": {
+      "name": "week_08_23",
+      "setVar": "isWorkDay"
+    }
+  },
+  {
+    "calendar": {
+      "name": "week_24_08",
+      "setVar": "isWorkDay_24_08"
+    }
+  },
+  {
+    "if": {
+      "expression": "${isWorkDay} != 'false'",
+      "then": [
+        {
+          "playback": {
+            "files": [
+              {
+                "name": "main menu2.wav"
+              }
+            ],
+            "getDigits": {
+              "flushDTMF": true,
+              "max": 8,
+              "min": 1,
+              "setVar": "enter",
+              "timeout": 4000,
+              "tries": 1
+            }
+          }
+        },
+        {
+          "switch": {
+            "case": {
+              "1": [
+                {
+                  "set": {
+                    "ivr_question_1": "${enter}"
+                  }
+                },
+                {
+                  "export": [
+                    "ivr_question_1"
+                  ]
+                },
+                {
+                  "joinQueue": {
+                    "priority": 100,
+                    "queue": {
+                      "id": 12
+                    },
+                    "ringtone": {
+                      "id": 15,
+                      "type": "wav"
+                    },
+                    "timers": [
+                      {
+                        "actions": [
+                          {
+                            "log": "Timer in queue!"
+                          },
+                          {
+                            "ccPosition": {
+                              "set": "myPosition"
+                            }
+                          },
+                          {
+                            "export": [
+                              "myPosition",
+                              "uuid"
+                            ]
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} <= '1'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_первый_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '1' & ${myPosition} <= '4'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_1_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '4' & ${myPosition} <= '6'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_2_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '6' & ${myPosition} <= '8'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_3_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '8' & ${myPosition} <= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_4_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} >= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_5_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "log": "${uuid} ${myPosition}"
+                          }
+                        ],
+                        "interval": 10,
+                        "tries": 1
+                      }
+                    ],
+                    "transferAfterBridge": {
+                      "id": "5"
+                    }
+                  }
+                }
+              ],
+              "2": [
+                {
+                  "set": {
+                    "ivr_question_1": "${enter}"
+                  }
+                },
+                {
+                  "export": [
+                    "ivr_question_1"
+                  ]
+                },
+                {
+                  "joinQueue": {
+                    "priority": 100,
+                    "queue": {
+                      "id": 3
+                    },
+                    "ringtone": {
+                      "id": 15,
+                      "type": "wav"
+                    },
+                    "timers": [
+                      {
+                        "actions": [
+                          {
+                            "log": "Timer in queue!"
+                          },
+                          {
+                            "ccPosition": {
+                              "set": "myPosition"
+                            }
+                          },
+                          {
+                            "export": [
+                              "myPosition",
+                              "uuid"
+                            ]
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} <= '1'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_первый_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '1' & ${myPosition} <= '4'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_1_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '4' & ${myPosition} <= '6'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_2_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '6' & ${myPosition} <= '8'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_3_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '8' & ${myPosition} <= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_4_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} >= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_5_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "log": "${uuid} ${myPosition}"
+                          }
+                        ],
+                        "interval": 10,
+                        "tries": 1
+                      }
+                    ],
+                    "transferAfterBridge": {
+                      "id": "5"
+                    }
+                  }
+                }
+              ],
+              "3": [
+                {
+                  "set": {
+                    "ivr_question_1": "${enter}"
+                  }
+                },
+                {
+                  "export": [
+                    "ivr_question_1"
+                  ]
+                },
+                {
+                  "joinQueue": {
+                    "priority": 100,
+                    "queue": {
+                      "id": 2
+                    },
+                    "ringtone": {
+                      "id": 15,
+                      "type": "wav"
+                    },
+                    "timers": [
+                      {
+                        "actions": [
+                          {
+                            "log": "Timer in queue!"
+                          },
+                          {
+                            "ccPosition": {
+                              "set": "myPosition"
+                            }
+                          },
+                          {
+                            "export": [
+                              "myPosition",
+                              "uuid"
+                            ]
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} <= '1'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_первый_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '1' & ${myPosition} <= '4'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_1_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '4' & ${myPosition} <= '6'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_2_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '6' & ${myPosition} <= '8'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_3_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '8' & ${myPosition} <= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_4_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} >= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_5_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "log": "${uuid} ${myPosition}"
+                          }
+                        ],
+                        "interval": 10,
+                        "tries": 1
+                      }
+                    ],
+                    "transferAfterBridge": {
+                      "id": "5"
+                    }
+                  }
+                }
+              ]
+            },
+            "variable": "${enter}"
+          }
+        },
+        {
+          "string": {
+            "args": [
+              "0",
+              "1"
+            ],
+            "data": "${enter}",
+            "fn": "substr",
+            "setVar": "enter2"
+          }
+        },
+        {
+          "if": {
+            "expression": "${enter2} =='*'",
+            "then": [
+              {
+                "string": {
+                  "args": "1",
+                  "data": "${enter}",
+                  "fn": "slice",
+                  "setVar": "enter3"
+                }
+              },
+              {
+                "bridge": {
+                  "endpoints": [
+                    {
+                      "extension": "${enter3}",
+                      "type": "user"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "expression": "${enter} != '1' & ${enter} != '2' & ${enter} != '3' & ${enter2} !='*'",
+            "then": [
+              {
+                "set": {
+                  "ivr_question_1": "0"
+                }
+              },
+              {
+                "export": [
+                  "ivr_question_1"
+                ]
+              },
+              {
+                "joinQueue": {
+                  "priority": 100,
+                  "queue": {
+                    "id": 5
+                  },
+                  "ringtone": {
+                    "id": 15,
+                    "type": "wav"
+                  },
+                  "timers": [
+                    {
+                      "actions": [
+                        {
+                          "log": "Timer in queue!"
+                        },
+                        {
+                          "ccPosition": {
+                            "set": "myPosition"
+                          }
+                        },
+                        {
+                          "export": [
+                            "myPosition",
+                            "uuid"
+                          ]
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} <= '1'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_первый_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} > '1' & ${myPosition} <= '4'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_1_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} > '4' & ${myPosition} <= '6'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_2_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} > '6' & ${myPosition} <= '8'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_3_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} > '8' & ${myPosition} <= '11'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_4_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "if": {
+                            "expression": "${myPosition} >= '11'",
+                            "then": [
+                              {
+                                "playback": {
+                                  "files": [
+                                    {
+                                      "name": "Глобус _автоотв_очередь_5_U-Law.mp3"
+                                    },
+                                    {
+                                      "name": "callback.mp3"
+                                    },
+                                    {
+                                      "name": "ding.wav"
+                                    }
+                                  ],
+                                  "getDigits": {
+                                    "flushDTMF": true,
+                                    "max": 1,
+                                    "min": 1,
+                                    "setVar": "callback",
+                                    "timeout": 4000,
+                                    "tries": 1
+                                  }
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${callback} == 1",
+                                  "then": [
+                                    {
+                                      "hangup": ""
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "log": "${uuid} ${myPosition}"
+                        }
+                      ],
+                      "interval": 10,
+                      "tries": 1
+                    }
+                  ],
+                  "transferAfterBridge": {
+                    "id": "5"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  {
+    "if": {
+      "expression": "${isWorkDay_23_24} != 'false'",
+      "then": [
+        {
+          "playback": {
+            "files": [
+              {
+                "name": "main menu2.wav"
+              }
+            ],
+            "getDigits": {
+              "flushDTMF": true,
+              "max": 8,
+              "min": 1,
+              "setVar": "enter",
+              "timeout": 4000,
+              "tries": 1
+            }
+          }
+        },
+        {
+          "switch": {
+            "case": {
+              "1": [
+                {
+                  "playback": {
+                    "files": [
+                      {
+                        "name": "Нерабочее время.mp3"
+                      }
+                    ],
+                    "getDigits": {
+                      "flushDTMF": false,
+                      "max": 1,
+                      "min": 1,
+                      "setVar": "enter",
+                      "timeout": 1000,
+                      "tries": 1
+                    }
+                  }
+                }
+              ],
+              "2": [
+                {
+                  "set": {
+                    "ivr_question_1": "${enter}"
+                  }
+                },
+                {
+                  "export": [
+                    "ivr_question_1"
+                  ]
+                },
+                {
+                  "joinQueue": {
+                    "priority": 100,
+                    "queue": {
+                      "id": 3
+                    },
+                    "ringtone": {
+                      "id": 15,
+                      "type": "wav"
+                    },
+                    "timers": [
+                      {
+                        "actions": [
+                          {
+                            "log": "Timer in queue!"
+                          },
+                          {
+                            "ccPosition": {
+                              "set": "myPosition"
+                            }
+                          },
+                          {
+                            "export": [
+                              "myPosition",
+                              "uuid"
+                            ]
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} <= '1'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_первый_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '1' & ${myPosition} <= '4'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_1_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '4' & ${myPosition} <= '6'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_2_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '6' & ${myPosition} <= '8'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_3_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} > '8' & ${myPosition} <= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_4_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "if": {
+                              "expression": "${myPosition} >= '11'",
+                              "then": [
+                                {
+                                  "playback": {
+                                    "files": [
+                                      {
+                                        "name": "Глобус _автоотв_очередь_5_U-Law.mp3"
+                                      },
+                                      {
+                                        "name": "callback.mp3"
+                                      },
+                                      {
+                                        "name": "ding.wav"
+                                      }
+                                    ],
+                                    "getDigits": {
+                                      "flushDTMF": true,
+                                      "max": 1,
+                                      "min": 1,
+                                      "setVar": "callback",
+                                      "timeout": 4000,
+                                      "tries": 1
+                                    }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "expression": "+${callback} == 1",
+                                    "then": [
+                                      {
+                                        "hangup": ""
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "log": "${uuid} ${myPosition}"
+                          }
+                        ],
+                        "interval": 10,
+                        "tries": 1
+                      }
+                    ],
+                    "transferAfterBridge": {
+                      "id": "5"
+                    }
+                  }
+                }
+              ],
+              "3": [
+                {
+                  "playback": {
+                    "files": [
+                      {
+                        "name": "Нерабочее время.mp3"
+                      }
+                    ],
+                    "getDigits": {
+                      "flushDTMF": false,
+                      "max": 1,
+                      "min": 1,
+                      "setVar": "enter",
+                      "timeout": 1000,
+                      "tries": 1
+                    }
+                  }
+                }
+              ]
+            },
+            "variable": "${enter}"
+          }
+        },
+        {
+          "playback": {
+            "files": [
+              {
+                "name": "Нерабочее время.mp3"
+              }
+            ],
+            "getDigits": {
+              "flushDTMF": false,
+              "max": 1,
+              "min": 1,
+              "setVar": "enter",
+              "timeout": 1000,
+              "tries": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "if": {
+      "expression": "${isWorkDay_24_08} != 'false'",
+      "then": [
+        {
+          "playback": {
+            "files": [
+              {
+                "name": "Нерабочее время.mp3"
+              }
+            ],
+            "getDigits": {
+              "flushDTMF": false,
+              "max": 1,
+              "min": 1,
+              "setVar": "enter",
+              "timeout": 1000,
+              "tries": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "hangup": ""
+  }
+]

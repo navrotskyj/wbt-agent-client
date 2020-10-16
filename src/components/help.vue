@@ -64,13 +64,13 @@
         data() {
             return {
                 agents: [],
+                queue: [],
                 tab: 0,
+                items: [],
                 tabs: [
                     {
-                       "tab": "Friends"
-                    },
-                    {
-                       "tab": "Queue"
+                       tab: "Friends",
+                        items: []
                     }
                 ]
             }

@@ -1,6 +1,5 @@
 <template>
     <v-card class="mx-auto">
-
         <v-list-item three-line>
             <v-list-item-content>
                 <div  v-if="call.queue" class="overline mb-4">{{call.queue.queue_name}}</div>
@@ -8,31 +7,41 @@
                 <v-list-item-subtitle>Phone: {{call.displayNumber}}</v-list-item-subtitle>
             </v-list-item-content>
 
+            <div class="wbt-incoming-video">
+
+            </div>
+
+            <span v-show="call.transcript">
+                Transcript: {{call.transcript}}
+            </span>
+
             <v-list-item-avatar
                     tile
                     size="80"
                     color="grey"
-            ></v-list-item-avatar>
+            >
+            </v-list-item-avatar>
         </v-list-item>
+        <video v-if="call.peerStreams"  :srcObject.prop="call.peerStreams[0]" class="wbt-incoming-video" autoplay />
 
         <v-card-actions>
-            <v-btn color="error"  v-show="call.allowHangup" @click="call.hangup()">
+            <v-btn color="error" v-show="call.allowHangup" @click="call.hangup()">
                 <v-icon>mdi-phone-hangup</v-icon>hangup
             </v-btn>
 
-            <v-btn color="warning"  v-show="call.allowHold" @click="call.hold()" >
+            <v-btn color="warning" v-show="call.allowHold" @click="call.hold()" >
                 <v-icon>mdi-phone-paused</v-icon>hold
             </v-btn>
             <v-btn color="success" v-show="call.allowUnHold" @click="call.unHold()">
                 <v-icon>mdi-phone-paused-outline</v-icon>active
             </v-btn>
-            <v-btn color="success" v-show="call.allowAnswer" @click="call.answer({video: true})" >
+            <v-btn color="success" v-show="call.allowAnswer" @click="call.answer({})" >
                 <v-icon>mdi-phone-incoming</v-icon>answer
             </v-btn>
             <v-btn v-if="call.allowReporting"
                    class="mr-4"
                    color="success"
-                   @click="call.reporting(call.postProcessData)"
+                   @click="call.reporting({success: true})"
             >
                 Next call
                 <v-icon>mdi-skip-forward-outline</v-icon>
@@ -69,7 +78,7 @@
                         </v-row>
                     </v-container>
 
-                    <v-container fluid v-if="call.memberCommunication">
+                    <v-container v-if="call.memberCommunication">
                         <v-row align="center">
                             <v-col class="d-flex" cols="12" sm="6">
                                 <v-text-field
@@ -80,7 +89,9 @@
                             </v-col>
                             <v-col class="d-flex" cols="12" sm="6">
                                 <v-select
-                                        :items="['a']"
+                                        v-model="call.memberCommunication.type"
+                                        :items="[call.memberCommunication.type]"
+                                        item-text="name"
                                         label="Type"
                                 ></v-select>
                             </v-col>
@@ -92,8 +103,18 @@
                         </v-row>
                     </v-container>
 
-                    <v-row align="center">
+                    <v-row v-if="call.allowReporting" align="center">
+                        <v-text-field
+                                v-model="call.postProcessData.next_distribute_at"
+                                label="Next call"
+                        ></v-text-field>
+                    </v-row>
 
+                    <v-row v-if="call.allowReporting" align="center">
+                        <v-text-field
+                                v-model="call.postProcessData.expire"
+                                label="Expire"
+                        ></v-text-field>
                     </v-row>
                 </v-col>
             </v-row>
@@ -114,33 +135,30 @@
                 >
                     <template v-slot:opposite>
         <span
-                :class="`headline font-weight-bold`"
+                :class="`headline font-weight-bold`" style="max-width: 200px;"
         >{{new Date(+v.joined_at).toLocaleString()}}</span>
                     </template>
-                    <v-card>
-                        <v-card-title class="green lighten-1">
+                    <v-card
+                            class="mx-auto"
+                    >
+                        <v-list-item three-line>
+                            <v-list-item-content>
+                                <div class="overline mb-4">{{v.result}}</div>
+                                <v-list-item-title class="headline mb-1">{{v.destination.destination}}</v-list-item-title>
+                                <v-list-item-subtitle v-if="v.agent">{{v.agent.name}}</v-list-item-subtitle>
+                                <v-list-item-subtitle>{{v.description}}</v-list-item-subtitle>
+                            </v-list-item-content>
+
                             <v-icon
-                                    class="mr-4"
-                                    dark
+                                    tile
                                     size="42"
-                            >
-                                mdi-phone-in-talk
-                            </v-icon>
-                            <h2 class="display-1 white--text font-weight-light">
-                                {{v.destination.destination}}
-                            </h2>
-                        </v-card-title>
-
-
+                            >mdi-phone</v-icon>
+                        </v-list-item>
                     </v-card>
                 </v-timeline-item>
             </v-timeline>
 
-            <audio v-if="call.peerStreams" :srcObject.prop="call.peerStreams[0]" autoplay />
         </v-card-text>
-
-
-
     </v-card>
 </template>
 
@@ -203,21 +221,26 @@
                     return
                 }
 
-                const res = await memberApi.searchAttemptsHistory(
-                    1,
-                    20,
-                    0,
-                    Date.now() * 1000,
-                    undefined,
-                    undefined,
-                    undefined,
-                    this.call.queue.member_id,
-                    undefined,
-                    undefined,
-                    undefined,
-                    "+joined_at",
-                )
-                this.history = res.data.items
+                try {
+                    // const res = memberApi.searchAttemptsHistory(
+                    //     1,
+                    //     10,
+                    //     0,
+                    //     Date.now() * 1000,
+                    //     undefined,
+                    //     undefined,
+                    //     undefined,
+                    //     this.call.queue.member_id,
+                    //     undefined,
+                    //     undefined,
+                    //     undefined,
+                    //     "+joined_at",
+                    // )
+                    // this.history = res.data.items
+                } catch (e) {
+                    console.error(e)
+                    this.history = []
+                }
             }
         },
         watch: {
@@ -228,5 +251,15 @@
 </script>
 
 <style scoped>
-
+    .wbt-incoming-video {
+        /*max-width: 215px;*/
+        /*max-height: 180px;*/
+        /*position: absolute;*/
+        /*right: 24px;*/
+        /*top: 7px;*/
+        width: 100% !important;
+        height: auto !important;
+        max-width: 1024px;
+        background-color: black;
+    }
 </style>

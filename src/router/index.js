@@ -4,7 +4,9 @@ import Call from  '../components/call'
 import Test from  '../components/test'
 import Task from  '../components/task'
 import Email from  '../components/email'
+import Chat from  '../components/chat'
 import Dashboard from  '../components/dashboard'
+import CallHistory from '../components/callHistory'
 
 const routes = [
     {
@@ -16,6 +18,11 @@ const routes = [
         path: '/dashboard',
         name: 'dashboard',
         component: Dashboard
+    },
+    {
+        path: '/call_history',
+        name: 'call_history',
+        component: CallHistory
     },
     {
         path: '/call/:callId',
@@ -32,6 +39,12 @@ const routes = [
         path: '/email/:emailId',
         name: 'email',
         component: Email
+    },
+    {
+        path: '/chat/:chatId',
+        name: 'chat',
+        component: Chat,
+        props: (route) => ({ chatId: route.params.chatId, chat: route.params.chat })
     },
     {
         path: '/test',

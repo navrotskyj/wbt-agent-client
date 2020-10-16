@@ -3,6 +3,7 @@ import {openSocket} from "../internal/client";
 
 import callStore from './call'
 import agentStore from './agent'
+import chatStore from './chat'
 
 import {AgentStatus} from '../../webitel-sdk/src'
 
@@ -15,7 +16,8 @@ const Store = new Vuex.Store({
     },
     modules: {
         call: callStore,
-        agent: agentStore
+        agent: agentStore,
+        chat: chatStore
     },
     getters: {
         layout(state) {
@@ -45,7 +47,7 @@ const Store = new Vuex.Store({
     actions: {
         async makeCall({ commit, state }, {destination, variables, useVideo, useScreen}) {
             if (state.client) {
-                return state.client.invite({
+                return state.client.call({
                     destination,
                     params: {
                         video: useVideo,

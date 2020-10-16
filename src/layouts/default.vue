@@ -6,6 +6,29 @@
             <v-card class="mx-auto"
                     max-width="344"
                     outlined
+                    :to="{ name: 'dashboard'}"
+            >
+                <v-list-item three-line>
+                    <v-list-item-content >
+                        <v-list-item-title class="headline mb-1">Dashboard</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-card>
+            <v-card class="mx-auto"
+                    max-width="344"
+                    outlined
+                    :to="{ name: 'call_history'}"
+            >
+                <v-list-item three-line>
+                    <v-list-item-content >
+                        <v-list-item-title class="headline mb-1">History call</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-card>
+
+            <v-card class="mx-auto"
+                    max-width="344"
+                    outlined
                     :to="{ name: 'main'}"
             >
                 <v-list-item three-line>
@@ -34,6 +57,25 @@
                 <!--<v-card-actions class="wbt-list-btn-groups">-->
                 <!--</v-card-actions>-->
             </v-card>
+
+            <v-card v-for="(chat, index) in conversationList" active :to="{ name: 'chat', params: {chat: chat, chatId: chat.id }}" :key="`chat-${index}`"
+                    class="mx-auto"
+                    max-width="344"
+            >
+                <v-list-item three-line >
+                    <v-list-item-icon>
+                        <v-icon>mdi-chat</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content >
+                        <div class="overline">{{chat.state}}</div>
+                        <v-list-item-title class="headline mb-1">{{chat.state}}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <!--<v-card-actions class="wbt-list-btn-groups">-->
+                <!--</v-card-actions>-->
+            </v-card>
+
             </v-list-item-group>
         </v-navigation-drawer>
 
@@ -55,9 +97,13 @@
         </v-app-bar>
 
         <v-content app>
-            <transition>
-                <slot/>
-            </transition>
+            <v-container  fill-height>
+                <v-layout >
+                    <v-flex >
+                        <slot/>
+                    </v-flex>
+                </v-layout>
+            </v-container>
         </v-content>
 
         <v-btn
@@ -120,7 +166,10 @@
             },
             callList() {
                 return this.$store.getters.callList.sort(compare);
-            }
+            },
+            conversationList() {
+                return this.$store.getters.conversationList;
+            },
         },
         methods: {
             exit() {}

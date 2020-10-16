@@ -1,15 +1,22 @@
-import {Client, AgentServiceApi, Configuration, MemberServiceApi, QueueServiceApi, CallActions, CallServiceApi} from "../../webitel-sdk/src";
+import {Client, AgentServiceApi, Configuration, MemberServiceApi, MemberServiceApiFactory,
+    QueueServiceApi, CallActions, CallServiceApi} from "../../webitel-sdk/src";
+
 
 import store from '../store'
 import router from '../router'
-import {AgentStatusEvent} from "../../webitel-sdk/src/socket/agent";
+import {AgentStatusEvent} from "../../webitel-sdk/src";
+import {ChatActions} from "../../webitel-sdk/src";
+import {ExternalClient} from '../../webitel-sdk/src/sip/external'
+import {SipPhone} from '../../webitel-sdk/src/sip/webrtc'
 
 export let client = null;
-const token = '99rsrm7skiggtd3ozd3afknofr'
+const token = 'kqcxy369aiyptkomj47ix9p7jh'
+// const token = 'h4tpx5sbq7ry8c6tgy757tdr6a' // ATB
 
 export const configuration = new Configuration({
     accessToken: token,//"xtmepawckpb3pct391699stbhe",
     apiKey: token,
+    // basePath: "https://cloud.webitel.ua/api"
 });
 
 export const memberApi = new MemberServiceApi(configuration)
@@ -21,6 +28,47 @@ export async function openSocket() {
 
     const queuesRes = await queueApi.searchQueue(1, 10, undefined, undefined, undefined, "+priority")
     console.table(queuesRes.data.items)
+
+    const aggRes = await callApi.aggregateHistoryCall({
+
+        created_at: {
+          from: Date.now() - 60 * 60 * 1000 * 60,
+          to: Date.now()
+        },
+        aggs: [
+            {
+                name: "my best agg",
+                group: [
+                    {
+                        id: "agent_id"
+                    }
+                ],
+                avg: ["duration"]
+            }
+        ]
+    })
+    console.table(aggRes.data.items)
+
+    console.time("searchAgentStatusStatistic");
+    const res = await agentApi.searchAgentStatusStatistic(
+        1,
+        10,
+        1597006800000, // time_from
+        1597053999903, // time_to
+        undefined,
+        undefined, // agent_id[]
+        undefined, // status[]
+        undefined,
+        undefined,
+        undefined, // utilization_from
+        undefined, // utilization_to
+        false,
+        "+name",
+        undefined, // domain_id
+        undefined,
+    );
+    console.timeEnd("searchAgentStatusStatistic")
+
 
     //FIXME
     // await memberApi.searchAttemptsHistory(
@@ -71,31 +119,43 @@ export async function openSocket() {
     // console.table(res.data.items)
 
     client = new Client({
-        // endpoint: "wss://dev.webitel.com/ws",
+        endpoint: "wss://dev.webitel.com/ws",
         // endpoint: "ws://192.168.177.199/ws",
-        endpoint: "ws://10.10.10.25:10025",
+        // endpoint: "wss://cloud.webitel.ua/ws",
+        // endpoint: "ws://10.10.10.25:10025",
         token,
         registerWebDevice: true,
-        debug: false,
+        debug: true,
     });
 
     window.cli = client;
 
+
+
+    agentApi.searchAgentStateHistory()
     await client.connect();
 
-    const callHandler = async (action, call) => {
+    const callHandler =  (action, call) => {
+        console.error(action)
         switch (action) {
+
             case CallActions.Ringing:
 
                 if (call.queue) {
                     // FIXME
-                    const result = await memberApi.readMember(call.queue.queue_id, call.queue.member_id)
+                    let data = {}
+                    try {
+                        // const result = await memberApi.readMember(call.queue.queue_id, call.queue.member_id)
+                        // data = result.data
+                    } catch (e) {
+                        console.error(e)
+                    }
 
                     call.postProcessData = {
                         success: false,
                         display: false,
                         description: '',
-                        ...result.data
+                        ...data
                     };
 
                 }
@@ -117,9 +177,41 @@ export async function openSocket() {
         }
     };
 
+    const chatHandler = (action, chat) => {
+        // debugger
+        switch (action) {
+            case ChatActions.UserInvite:
+                store.commit('newConversation', chat)
+                break
+
+            case ChatActions.Message:
+                break
+
+            case ChatActions.Decline:
+            case ChatActions.Leave:
+            case ChatActions.Close:
+                store.commit('removeConversation', chat)
+                break
+
+            default:
+
+                break
+        }
+        console.error(action, chat)
+    }
+
 
     await client.auth();
-    await client.subscribeCall( callHandler, {ids: [1,2,3,4,56]});
+    await client.subscribeCall( callHandler, {ids: [1,2,3,4,56]})
+    await client.subscribeChat( chatHandler)
+
+    // if (EXTERNAL) {
+    //     client.registerCallClient(new ExternalClient())
+    // } else if (WEBCLIENT) {
+    //     client.registerCallClient(new SipPhone(await client.deviceConfig("webrtc")))
+    // } else {
+    //     // No register
+    // }
 
     for (const call of client.allCall()) {
         store.commit('newCall', call)
@@ -130,9 +222,10 @@ export async function openSocket() {
         this.agent.waiting('call')
      */
 
-
     try {
         const agent = await client.agentSession()
+
+
 
         await client.subscribeAgentsStatus(
             (e) => {
@@ -147,8 +240,9 @@ export async function openSocket() {
         client.subscribeTask((action, task) => {
             //TODO
             store.commit('agent/updateChannels', agent.channels)
-        })
 
+        })
+        store.dispatch('agent/refreshQueues', agent.agentId)
         store.commit('agent/set', agent)
     } catch (e) {
         console.error(e.message)
