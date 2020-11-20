@@ -8,7 +8,7 @@
                 <v-btn color="error" @click="decline()">Decline</v-btn>
                 <v-btn color="success" @click="join()">Join</v-btn>
                 <v-btn  @click="leave()">Leave</v-btn>
-                <v-btn  @click="close()">Close</v-btn>
+<!--                <v-btn  @click="close()">Close</v-btn>-->
               </v-item-group>
             </v-row>
             <v-row dense>
@@ -24,7 +24,7 @@
                             <v-list-item-content>
                                 <div class="overline mb-4">{{msg.id}}</div>
                                 <v-list-item-subtitle>{{msg.channel_id}}</v-list-item-subtitle>
-                                <v-list-item-title class="headline mb-1">{{msg.value}}</v-list-item-title>
+                                <v-list-item-title class="headline mb-1">{{msg.text}}</v-list-item-title>
                             </v-list-item-content>
                         </v-list-item>
                     </v-card>
