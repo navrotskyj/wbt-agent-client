@@ -4,6 +4,7 @@ import {openSocket} from "../internal/client";
 import callStore from './call'
 import agentStore from './agent'
 import chatStore from './chat'
+import taskStore from './task'
 
 import {AgentStatus} from '../../webitel-sdk/src'
 
@@ -17,7 +18,8 @@ const Store = new Vuex.Store({
     modules: {
         call: callStore,
         agent: agentStore,
-        chat: chatStore
+        chat: chatStore,
+        task: taskStore,
     },
     getters: {
         layout(state) {

@@ -69,6 +69,28 @@
                     <v-list-item-content >
                         <div class="overline">{{chat.state}}</div>
                         <v-list-item-title class="headline mb-1">{{chat.state}}</v-list-item-title>
+                        <v-list-item-title class="headline mb-1">cr: {{chat.createdAt}}</v-list-item-title>
+                        <v-list-item-title class="headline mb-1">ans: {{chat.answeredAt}}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <!--<v-card-actions class="wbt-list-btn-groups">-->
+                <!--</v-card-actions>-->
+            </v-card>
+
+            <v-card v-for="(task, index) in taskList" active :to="{ name: 'task', params: {task: task, taskId: task.id }}" :key="`task-${index}`"
+                    class="mx-auto"
+                    max-width="344"
+            >
+                <v-list-item three-line >
+                    <v-list-item-icon>
+                        <v-icon>mdi-chat</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content >
+                        <div class="overline">{{task.state}}</div>
+                        <v-list-item-title class="headline mb-1">{{task.state}}</v-list-item-title>
+                        <v-list-item-title class="headline mb-1">cr: {{task.createdAt}}</v-list-item-title>
+                        <v-list-item-title class="headline mb-1">ans: {{task.answeredAt}}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -169,6 +191,9 @@
             },
             conversationList() {
                 return this.$store.getters.conversationList;
+            },
+            taskList() {
+                return this.$store.getters.taskList;
             },
         },
         methods: {

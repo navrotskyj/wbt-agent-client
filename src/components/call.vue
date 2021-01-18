@@ -7,9 +7,9 @@
                 <v-list-item-subtitle>Phone: {{call.displayNumber}}</v-list-item-subtitle>
             </v-list-item-content>
 
-            <div class="wbt-incoming-video">
+<!--            <div class="wbt-incoming-video">-->
 
-            </div>
+<!--            </div>-->
 
             <span v-show="call.transcript">
                 Transcript: {{call.transcript}}

@@ -10,7 +10,14 @@ import {ExternalClient} from '../../webitel-sdk/src/sip/external'
 import {SipPhone} from '../../webitel-sdk/src/sip/webrtc'
 
 export let client = null;
-const token = 'kqcxy369aiyptkomj47ix9p7jh'
+
+
+
+let token = localStorage.getItem('token');
+if (!token) {
+    token = prompt("Please enter your token", "");
+    localStorage.setItem('token', token);
+}
 // const token = 'h4tpx5sbq7ry8c6tgy757tdr6a' // ATB
 
 export const configuration = new Configuration({
@@ -73,14 +80,64 @@ async function getCallsCount() {
     return count;
 }
 
+function onIceStateChange(pc, event) {
+    if (pc) {
+        console.log(`${getName(pc)} ICE state: ${pc.iceConnectionState}`);
+        console.log('ICE state change event: ', event);
+    }
+}
+
+const offerOptions = {
+    offerToReceiveAudio: 1,
+    offerToReceiveVideo: 0
+};
+
+
+class Test {
+    constructor() {
+
+    }
+
+    async make() {
+        var pc1 = this.pc1 = new RTCPeerConnection({});
+        console.log('Created local peer connection object pc1');
+        pc1.addEventListener('icecandidate',  event => {
+            console.warn(event)
+            // pc1.addIceCandidate(event.candidate); // pc2
+        });
+
+        pc1.addEventListener('iceconnectionstatechange', async e => {
+            onIceStateChange(pc1, e)
+        });
+
+        const offer = await pc1.createOffer(offerOptions);
+        console.warn(offer.sdp)
+        await pc1.setLocalDescription(offer);
+    }
+
+    getSdp() {
+
+    }
+
+    answer(remSdp) {
+
+    }
+}
+
 export async function openSocket() {
     // const count = await getCallsCount();
     // console.error(count);
     // debugger;
     // return;
 
-    const queuesRes = await queueApi.searchQueue(1, 10, undefined, undefined, undefined, "+priority")
-    console.table(queuesRes.data.items)
+    window.tst = new Test();
+
+    try {
+        const queuesRes = await queueApi.searchQueue(1, 10, undefined, undefined, undefined, "+priority")
+        console.table(queuesRes.data.items)
+    } catch (e) {
+        localStorage.setItem('token', '');
+    }
 
     const aggRes = await callApi.aggregateHistoryCall({
 
@@ -222,6 +279,7 @@ export async function openSocket() {
         // endpoint: "wss://dev.webitel.com/ws",
         // endpoint: "ws://192.168.177.199/ws",
         // endpoint: "wss://cloud.webitel.ua/ws",
+        storageEndpoint: "https://dev.webitel.com/",
         endpoint: "ws://10.10.10.25:10025",
         token,
         registerWebDevice: false,
@@ -285,12 +343,18 @@ export async function openSocket() {
                 break
 
             case ChatActions.Message:
+                store.commit('updateConversation', chat)
                 break
 
             case ChatActions.Decline:
             case ChatActions.Leave:
             case ChatActions.Close:
+                store.commit('updateConversation', chat)
+                break
+
+            case ChatActions.Destroy:
                 store.commit('removeConversation', chat)
+                router.push({name: "main"})
                 break
 
             default:
@@ -306,11 +370,11 @@ export async function openSocket() {
     await client.subscribeChat( chatHandler)
 
     // if (EXTERNAL) {
-    //     client.registerCallClient(new ExternalClient({
-    //         server: "https://dev.webitel.com/api/"
-    //     }))
+        client.registerCallClient(new ExternalClient({
+            server: "https://dev.webitel.com/api/"
+        }))
     // } else if (WEBCLIENT) {
-        client.registerCallClient(new SipPhone(await client.deviceConfig("webrtc")))
+    //     client.registerCallClient(new SipPhone(await client.deviceConfig("webrtc")))
     // } else {
     //     // No register
     // }
@@ -320,8 +384,8 @@ export async function openSocket() {
         store.commit('newCall', call)
     }
 
-    for (const chat of client.allConversations) {
-	    // store.commit('newConversation', chat)
+    for (const chat of client.allConversations()) {
+	    store.commit('newConversation', chat)
     }
 
     /*
@@ -332,13 +396,11 @@ export async function openSocket() {
     try {
         const agent = await client.agentSession()
 
-
-
         await client.subscribeAgentsStatus(
-            (e) => {
+            (e, a) => {
                 store.commit('agent/setStatus', e.status)
                 if (e.status === "online") {
-                    store.commit('agent/updateChannels', agent.channels)
+                    store.commit('agent/updateChannel', agent.channel)
                 }
             },
             {agent_id: agent.agentId}
@@ -346,7 +408,32 @@ export async function openSocket() {
 
         client.subscribeTask((action, task) => {
             //TODO
-            store.commit('agent/updateChannels', agent.channels)
+            // console.warn(JSON.stringify(task, undefined, 4))
+            store.commit('agent/updateChannel', agent.channel)
+            if (task && task.channel === "task") {
+
+                switch (action) {
+                    case "distribute":
+                        task.postProcessData = {
+                            success: false,
+                            display: false,
+                            description: '',
+                        };
+                        store.commit('newTask', task)
+                        break
+
+                    case "waiting":
+                    case "missed":
+                        store.commit('removeTask', task)
+                        router.push({name: "main"})
+                        break
+
+                    default:
+                        store.commit('updateTask', task)
+                        break
+                }
+                console.error(action, task)
+            }
 
         })
         store.dispatch('agent/refreshQueues', agent.agentId)

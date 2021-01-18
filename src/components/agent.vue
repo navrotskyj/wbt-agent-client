@@ -9,12 +9,12 @@
                     </span>
             </v-btn>
 
-            <v-btn icon dark class="mb-3 mr-8" disabled v-model="answerInbound" @click.stop="answerInbound = !answerInbound">
-                    <v-icon>mdi-virus</v-icon>
-                    <span class="wbt-chan-state caption">
-                        Auto answer
-                    </span>
-            </v-btn>
+<!--            <v-btn icon dark class="mb-3 mr-8" disabled v-model="answerInbound" @click.stop="answerInbound = !answerInbound">-->
+<!--                    <v-icon>mdi-virus</v-icon>-->
+<!--                    <span class="wbt-chan-state caption">-->
+<!--                        Auto answer-->
+<!--                    </span>-->
+<!--            </v-btn>-->
 
               <v-btn icon dark class="ma-4" :disabled="ch.disabled" :color="ch.color" v-on:click='setWaiting(ch.channel)' v-for="(ch, index) in channels" :key="index">
                     <v-badge
@@ -113,15 +113,18 @@
                 return this.$store.getters['agent/lastStatusChange']
             },
             channels() {
-                return (this.$store.getters['agent/channels'] || []).map( i => {
-                    return {
-                        duration: chanelTime(i.state, i.joined_at, i.timeout),
-                        color: i.state === 'missed' ? 'error' : 'success',
-                        icon: channelIcon(i.channel),
-                        disabled: ['wrap_time', 'missed'].indexOf(i.state) === -1,
-                        ...i,
-                    }
-                })
+              const i = this.$store.getters['agent/channel'];
+              console.log(i)
+              if (!i) {
+                return []
+              }
+              return [{
+                duration: chanelTime(i.state, i.joined_at, i.timeout),
+                color: i.state === 'missed' ? 'error' : 'success',
+                icon: channelIcon(i.channel),
+                disabled: ['wrap_time', 'missed'].indexOf(i.state) === -1,
+                ...i,
+              }]
             }
         },
         methods: {
@@ -153,6 +156,10 @@
                 return "mdi-phone"
             case "chat":
                 return "mdi-chat"
+            case "task":
+                return "mdi-calendar-clock"
+            default:
+                return "mdi-sleep"
         }
     }
 </script>

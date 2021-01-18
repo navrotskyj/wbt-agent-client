@@ -31,9 +31,10 @@ const routes = [
         props: (route) => ({ callId: route.params.callId, call: route.params.call })
     },
     {
-        path: '/task/:callId',
+        path: '/task/:taskId',
         name: 'task',
-        component: Task
+        component: Task,
+        props: (route) => ({ taskId: route.params.taskId, task: route.params.task })
     },
     {
         path: '/email/:emailId',

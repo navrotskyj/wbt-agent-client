@@ -1,0 +1,1171 @@
+[
+  {
+    "set": {
+      "did": "${destination_number}"
+    }
+  },
+  {
+    "getQueueInfo": {
+      "field": "enabled",
+      "queue": {
+        "id": 121
+      },
+      "set": "QueueNoPriority"
+    }
+  },
+  {
+    "log": "QueueNoPriority ${QueueNoPriority}"
+  },
+  {
+    "if": {
+      "else": [
+        {
+          "if": {
+            "else": [
+              {
+                "set": {
+                  "did": "74952237587"
+                }
+              }
+            ],
+            "expression": "${did} == '555'",
+            "then": [
+              {
+                "set": {
+                  "did": "74952237587"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "export": [
+            "did"
+          ]
+        },
+        {
+          "trigger": {
+            "disconnected": [
+              {
+                "log": "DISCONNECTED ${caller_id_number}"
+              },
+              {
+                "log": "cc_resul>> ${uuid}>>>>>>>>>>>>>>>>>>>>${cc_result}>>>>>>${caller_id_number}"
+              },
+              {
+                "if": {
+                  "expression": "${cc_result} == 'success' || ${cc_result} == 'processing'",
+                  "then": [
+                    {
+                      "httpRequest": {
+                        "data": {
+                          "Properties": [
+                            {
+                              "Key": "OmniFromPhone",
+                              "Value": "${caller_id_number}"
+                            },
+                            {
+                              "Key": "OmniToPhone",
+                              "Value": "${did}"
+                            }
+                          ]
+                        },
+                        "exportCookie": "",
+                        "exportVariables": {},
+                        "headers": {},
+                        "method": "POST",
+                        "path": {},
+                        "responseCode": "CancelActivityresponse",
+                        "timeout": 2000,
+                        "url": "https://cc.globus.ru/0/ServiceModel/OmniCallBackActivityService.svc/CancelActivity"
+                      }
+                    },
+                    {
+                      "log": "CancelActivityresponse>>>>>>>>>>${CancelActivityresponse}"
+                    }
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "expression": "${callback} == '111111'",
+                  "then": [
+                    {
+                      "httpRequest": {
+                        "data": {
+                          "Properties": [
+                            {
+                              "Key": "OmniFromPhone",
+                              "Value": "${caller_id_number}"
+                            },
+                            {
+                              "Key": "OmniToPhone",
+                              "Value": "${did}"
+                            },
+                            {
+                              "Key": "OmniActivityTopicId",
+                              "Value": "${enter}"
+                            }
+                          ]
+                        },
+                        "exportCookie": "",
+                        "exportVariables": {},
+                        "headers": {},
+                        "method": "POST",
+                        "path": {},
+                        "responseCode": "CreateActivityresponse",
+                        "timeout": 2000,
+                        "url": "https://cc.globus.ru/0/ServiceModel/OmniCallBackActivityService.svc/CreateActivity"
+                      }
+                    },
+                    {
+                      "log": "CreateActivityresponse>>>>>>>>>>${CreateActivityresponse}"
+                    },
+                    {
+                      "httpRequest": {
+                        "data": {
+                          "Properties": [
+                            {
+                              "Key": "OmniFromPhone",
+                              "Value": "${caller_id_number}"
+                            },
+                            {
+                              "Key": "OmniToPhone",
+                              "Value": "${did}"
+                            },
+                            {
+                              "Key": "OmniActivityTopicId",
+                              "Value": "${enter}"
+                            }
+                          ]
+                        },
+                        "exportCookie": "",
+                        "exportVariables": {},
+                        "headers": {},
+                        "method": "POST",
+                        "path": {},
+                        "responseCode": "testresponse",
+                        "timeout": 2000,
+                        "url": "https://webhook.site/cb3ea726-c587-4a9f-a1a1-5a08a2d87787"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "log": "testresponse>>>>>>>>>>${testresponse}"
+        },
+        {
+          "calendar": {
+            "name": "week_08_23",
+            "setVar": "isWorkDay"
+          }
+        },
+        {
+          "if": {
+            "expression": "${isWorkDay} != 'false'",
+            "then": [
+              {
+                "ringReady": ""
+              },
+              {
+                "preAnswer": ""
+              },
+              {
+                "answer": ""
+              },
+              {
+                "playback": {
+                  "files": [
+                    {
+                      "name": "main menu_part1.wav"
+                    }
+                  ],
+                  "getDigits": {
+                    "flushDTMF": true,
+                    "max": 1,
+                    "min": 1,
+                    "setVar": "enter",
+                    "timeout": 100,
+                    "tries": 1
+                  }
+                }
+              },
+              {
+                "if": {
+                  "else": [
+                    {
+                      "if": {
+                        "else": [
+                          {
+                            "playback": {
+                              "files": [
+                                {
+                                  "name": "5000",
+                                  "type": "silence"
+                                }
+                              ],
+                              "getDigits": {
+                                "flushDTMF": false,
+                                "max": 7,
+                                "min": 1,
+                                "setVar": "enter2",
+                                "timeout": 3000,
+                                "tries": 1
+                              }
+                            }
+                          }
+                        ],
+                        "expression": "${enter} == 1 || ${enter} == 2 || ${enter} == 3 || ${enter} == 4",
+                        "then": []
+                      }
+                    }
+                  ],
+                  "expression": "+${enter}.length == 0",
+                  "then": [
+                    {
+                      "playback": {
+                        "files": [
+                          {
+                            "name": "main menu_part2.wav"
+                          }
+                        ],
+                        "getDigits": {
+                          "flushDTMF": false,
+                          "max": 8,
+                          "min": 1,
+                          "setVar": "enter3",
+                          "timeout": 3000,
+                          "tries": 1
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "string": {
+                  "args": [
+                    "0",
+                    "1"
+                  ],
+                  "data": "${enter3}",
+                  "fn": "substr",
+                  "setVar": "firstsymbol"
+                }
+              },
+              {
+                "string": {
+                  "args": [
+                    "/\\*?(\\d{1,8})/",
+                    "$1"
+                  ],
+                  "data": "${enter3}",
+                  "fn": "replace",
+                  "setVar": "enter3"
+                }
+              },
+              {
+                "if": {
+                  "else": [
+                    {
+                      "set": {
+                        "enter": "${firstsymbol}"
+                      }
+                    }
+                  ],
+                  "expression": "+${firstsymbol}.length == 0",
+                  "then": []
+                }
+              },
+              {
+                "if": {
+                  "else": [
+                    {
+                      "set": {
+                        "enter2": "${enter3}"
+                      }
+                    }
+                  ],
+                  "expression": "+${enter3}.length == 0",
+                  "then": []
+                }
+              },
+              {
+                "log": "ivr_dtmf------------->>>>>>>>>>>(1) ${enter}---->>(2) ${enter2}--->>(3) ${enter3}---->>(first) ${firstsymbol}---->>${caller_id_number}"
+              },
+              {
+                "set": {
+                  "interval": 20
+                }
+              },
+              {
+                "set": {
+                  "promotion": 1
+                }
+              },
+              {
+                "set": {
+                  "queue": "107"
+                }
+              },
+              {
+                "switch": {
+                  "case": {
+                    "1": [
+                      {
+                        "set": {
+                          "queue": "105"
+                        }
+                      },
+                      {
+                        "set": {
+                          "ivr_question_1": "${enter}"
+                        }
+                      },
+                      {
+                        "export": [
+                          "ivr_question_1"
+                        ]
+                      }
+                    ],
+                    "2": [
+                      {
+                        "set": {
+                          "queue": "106"
+                        }
+                      },
+                      {
+                        "set": {
+                          "ivr_question_1": "${enter}"
+                        }
+                      },
+                      {
+                        "export": [
+                          "ivr_question_1"
+                        ]
+                      }
+                    ],
+                    "3": [
+                      {
+                        "set": {
+                          "queue": "107"
+                        }
+                      },
+                      {
+                        "set": {
+                          "ivr_question_1": "${enter}"
+                        }
+                      },
+                      {
+                        "export": [
+                          "ivr_question_1"
+                        ]
+                      }
+                    ],
+                    "4": [
+                      {
+                        "bridge": {
+                          "codecs": [
+                            "PCMA",
+                            "PCMU"
+                          ],
+                          "endpoints": [
+                            {
+                              "dialString": "0001315",
+                              "name": "Cisco",
+                              "type": "gateway"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "variable": "${enter}"
+                }
+              },
+              {
+                "if": {
+                  "expression": "${QueueNoPriority} == 'true'",
+                  "then": [
+                    {
+                      "set": {
+                        "queue": "121"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "log": "donabrali ${enter} queueid ${queue}"
+              },
+              {
+                "if": {
+                  "expression": "(${enter} =='*' || ${firstsymbol} =='*') && ${enter2}.length == 7",
+                  "then": [
+                    {
+                      "bridge": {
+                        "codecs": [
+                          "PCMA",
+                          "PCMU"
+                        ],
+                        "endpoints": [
+                          {
+                            "dialString": "${enter2}",
+                            "name": "Cisco",
+                            "type": "gateway"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "expression": "${enter} =='*' & ${enter2}.length == 3",
+                  "then": [
+                    {
+                      "bridge": {
+                        "endpoints": [
+                          {
+                            "extension": "${enter2}",
+                            "type": "user"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "if": {
+                  "expression": "${enter} != '*'",
+                  "then": [
+                    {
+                      "switch": {
+                        "case": {
+                          "1": [
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_1.wav"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "2": [
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_1.wav"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "3": [
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_2.wav"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_1.wav"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "default": [
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_1.wav"
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "playback": {
+                                "files": [
+                                  {
+                                    "name": "Глобус_автоответчик_2.wav"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "variable": "${enter}"
+                      }
+                    },
+                    {
+                      "recordSession": {
+                        "action": "start",
+                        "bridged": true,
+                        "followTransfer": true,
+                        "minSec": 2,
+                        "stereo": true,
+                        "type": "mp3"
+                      }
+                    },
+                    {
+                      "joinQueue": {
+                        "priority": 100,
+                        "queue": {
+                          "id": "${queue}"
+                        },
+                        "ringtone": {
+                          "id": 67,
+                          "type": "wav"
+                        },
+                        "timers": [
+                          {
+                            "actions": [
+                              {
+                                "log": "Timer in queue!"
+                              },
+                              {
+                                "ccPosition": {
+                                  "set": "myPosition"
+                                }
+                              },
+                              {
+                                "export": [
+                                  "myPosition",
+                                  "uuid"
+                                ]
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} <= 1",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очередь_первый_U_Law.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 0,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                },
+                                                {
+                                                  "name": "Основное меню.mp3"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "log": "HANGUP"
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} == 2",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очередь 2.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} == 3",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очеередь 3_nocallback.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} > 3 & +${myPosition} <= 5",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очеередь 5_nocallback.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} > 5 & +${myPosition} <= 7",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очеередь 7_nocallback.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} > 7 & +${myPosition} <= 10",
+                                  "then": [
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очеередь 10_nocallback.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "expression": "+${myPosition} >= 11",
+                                  "then": [
+                                    {
+                                      "log": "my log message ${myPosition}"
+                                    },
+                                    {
+                                      "playback": {
+                                        "files": [
+                                          {
+                                            "name": "Глобус_автоотв_очеередь более 10_nocallback.wav"
+                                          }
+                                        ],
+                                        "getDigits": {
+                                          "flushDTMF": true,
+                                          "max": 1,
+                                          "min": 1,
+                                          "setVar": "callback",
+                                          "timeout": 4000,
+                                          "tries": 1
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${promotion} == 1 & +${callback} != 1",
+                                        "then": [
+                                          {
+                                            "set": {
+                                              "promotion": 0
+                                            }
+                                          },
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "oktell_2_5sec.wav"
+                                                },
+                                                {
+                                                  "name": "Глобус_автоотв_СП_u-Law.wav"
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "if": {
+                                        "expression": "+${callback} == 1",
+                                        "then": [
+                                          {
+                                            "playback": {
+                                              "files": [
+                                                {
+                                                  "name": "Глобус_автоотв_заявка принятА.wav"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          {
+                                            "hangup": ""
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "log": "${uuid} ${myPosition}"
+                              }
+                            ],
+                            "interval": "+${interval}",
+                            "tries": 99999
+                          }
+                        ],
+                        "transferAfterBridge": {
+                          "id": "7"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "expression": "${isWorkDay} != 'true'",
+            "then": [
+              {
+                "ringReady": ""
+              },
+              {
+                "preAnswer": ""
+              },
+              {
+                "answer": ""
+              },
+              {
+                "playback": {
+                  "files": [
+                    {
+                      "name": "Нерабочее время.wav"
+                    }
+                  ],
+                  "getDigits": {
+                    "flushDTMF": false,
+                    "max": 8,
+                    "min": 1,
+                    "setVar": "enter4",
+                    "timeout": 3000,
+                    "tries": 1
+                  }
+                }
+              },
+              {
+                "string": {
+                  "args": [
+                    "0",
+                    "1"
+                  ],
+                  "data": "${enter4}",
+                  "fn": "substr",
+                  "setVar": "noworkfirstsymbol"
+                }
+              },
+              {
+                "string": {
+                  "args": [
+                    "/\\*?(\\d{1,8})/",
+                    "$1"
+                  ],
+                  "data": "${enter4}",
+                  "fn": "replace",
+                  "setVar": "enter4"
+                }
+              },
+              {
+                "if": {
+                  "else": [
+                    {
+                      "hangup": ""
+                    }
+                  ],
+                  "expression": "${noworkfirstsymbol} == '*'",
+                  "then": [
+                    {
+                      "bridge": {
+                        "codecs": [
+                          "PCMA",
+                          "PCMU"
+                        ],
+                        "endpoints": [
+                          {
+                            "dialString": "${enter4}",
+                            "name": "Cisco",
+                            "type": "gateway"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "expression": "${did}.length == '3' & ${did} !='555'",
+      "then": [
+        {
+          "ringReady": ""
+        },
+        {
+          "preAnswer": ""
+        },
+        {
+          "answer": ""
+        },
+        {
+          "recordSession": {
+            "action": "start",
+            "bridged": true,
+            "followTransfer": true,
+            "minSec": 2,
+            "stereo": true,
+            "type": "mp3"
+          }
+        },
+        {
+          "bridge": {
+            "endpoints": [
+              {
+                "extension": "${did}",
+                "type": "user"
+              }
+            ]
+          }
+        },
+        {
+          "hangup": ""
+        }
+      ]
+    }
+  }
+]
