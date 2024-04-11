@@ -1,0 +1,120 @@
+[
+  {
+    "break1": true,
+    "softSleep": 1000
+  },
+  {
+    "set": {
+      "aaaa": "bla bla bla"
+    }
+  },
+  {
+    "form": {
+      "actions": [
+        "Next >>>"
+      ],
+      "view": {
+        "components": [
+          {
+            "id": "name",
+            "name": "name",
+            "propsData": {
+              "label": "Enter name",
+              "required": true
+            },
+            "type": "v-text-field",
+            "value": "${aaaa}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "component": {
+      "id": "A",
+      "view": {}
+    },
+    "tag": "ggg"
+  },
+  {
+    "form": {
+      "actions": [
+        "clear",
+        "save"
+      ],
+      "set": "resultForm",
+      "view": {
+        "components": [
+          {
+            "id": "id1",
+            "propsData": {
+              "class": "red darken-4",
+              "disabled": true
+            },
+            "text": "${name}",
+            "type": "v-text-field",
+            "value": "${name}"
+          },
+          {
+            "id": "reasonForComplaint",
+            "propsData": {
+              "items": [
+                "Автоответчик",
+                "Бросили трубку",
+                "Без ответа (молчание)",
+                "Тестовый звонок",
+                "Перезвон",
+                "Анкета/продажа",
+                "Активный займ",
+                "ИНН в ЧС",
+                "Категорический отказ",
+                "Номер не принаджежит клиенту",
+                "Не подходит под возврасные рамки",
+                "Не подходит срок кредита",
+                "Не подходит сумма кредита",
+                "Отказ от анкеты",
+                "Отказ, блок 30 дней"
+              ],
+              "label": "Disposition"
+            },
+            "type": "v-select",
+            "value": "Disposition"
+          },
+          {
+            "id": "Description",
+            "propsData": {
+              "label": "${aaaa}"
+            },
+            "type": "v-textarea",
+            "value": "${aaaa}"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "switch": {
+      "case": {
+        "default": [
+          {
+            "set": {
+              "aaaa": "[${attempt_id}] всі кажуть ${resultForm}, а ти купи"
+            }
+          },
+          {
+            "goto": "ggg"
+          }
+        ],
+        "save": [
+          {
+            "attemptResult": {
+              "description": "${aaaa}",
+              "status": "${reasonForComplaint}"
+            }
+          }
+        ]
+      },
+      "variable": "${resultForm}"
+    }
+  }
+]

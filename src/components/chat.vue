@@ -5,6 +5,8 @@
             <h4>{{chat.state}}</h4>
             <v-row>
               <v-item-group>
+                <div v-if="chat.task.form">{{chat.task.form}}</div>
+                <v-btn v-if="chat.task.form" color="error" v-show="chat.task.form" @click="formAction(chat.task)">Action[0]</v-btn>
                 <v-btn color="error" v-show="chat.allowDecline" @click="decline()">Decline</v-btn>
                 <v-btn color="success" v-show="chat.allowJoin" @click="join()">Join</v-btn>
                 <v-btn v-show="chat.allowLeave" @click="leave()">Leave</v-btn>
@@ -90,6 +92,11 @@
             },
             decline() {
               this.chat.decline()
+            },
+            formAction(task) {
+              debugger
+              console.error(task.form.actions[1])
+              task.formAction(task.form.actions[1].id, {})
             },
             join() {
               this.chat.join()

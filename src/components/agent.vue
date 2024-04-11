@@ -54,7 +54,7 @@
             <v-list>
                 <v-list-item
                         v-for="(item, index) in listAgentStatus"
-                        v-show="item.id !== status"
+                        v-show="item.id !== status && !item.hide"
                         :key="index"
                         @click="setStatus(item)"
                 >
@@ -90,6 +90,7 @@
                     {title: 'Offline', id: 'offline', color: 'grey accent-4'},
                     {title: 'Sleep', id: 'pause', color: 'amber accent-4', icon: 'mdi-pause'},
                     {title: 'Smoke', id: 'pause', color: 'amber accent-4', icon: 'mdi-pause'},
+                    {title: '', hide: true, id: 'break_out', color: 'amber accent-4', icon: 'mdi-pause'},
                 ],
                 color: "light-green accent-4",
             }
@@ -113,18 +114,20 @@
                 return this.$store.getters['agent/lastStatusChange']
             },
             channels() {
-              const i = this.$store.getters['agent/channel'];
-              console.log(i)
-              if (!i) {
+              const channels = this.$store.getters['agent/channels'];
+              console.log(channels)
+              if (!channels) {
                 return []
               }
-              return [{
-                duration: chanelTime(i.state, i.joined_at, i.timeout),
-                color: i.state === 'missed' ? 'error' : 'success',
-                icon: channelIcon(i.channel),
-                disabled: ['wrap_time', 'missed'].indexOf(i.state) === -1,
-                ...i,
-              }]
+              return channels.map( i => {
+                return {
+                  duration: chanelTime(i.state, i.joined_at, i.timeout),
+                  color: i.state === 'missed' ? 'error' : 'success',
+                  icon: channelIcon(i.channel),
+                  disabled: ['wrap_time', 'missed'].indexOf(i.state) === -1,
+                  ...i,
+                }
+              })
             }
         },
         methods: {

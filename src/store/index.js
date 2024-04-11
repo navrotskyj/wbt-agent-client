@@ -76,7 +76,7 @@ const Store = new Vuex.Store({
                     await state.client.agent.offline();
                     break;
                 case AgentStatus.Online:
-                    await state.client.agent.online();
+                    await state.client.agent.online([], false);
                     break;
                 default:
                     throw new Error(`unknown agent status  \"${status}\"`)

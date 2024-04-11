@@ -1,0 +1,239 @@
+[
+  {
+    "set": {
+      "knowledge_base": "https://dev.webitel.com/grafana/d-solo/vHp0zi0Mk/outbound-cc-copy?orgId=1&refresh=5s&from=1608172303668&to=1608193903669&var-domain_id=1&theme=light&panelId=10",
+      "knowledge_base1": "https://player.vimeo.com/video/63534746",
+      "Мова спілкування": "Ukraine"
+    }
+  },
+  {
+    "client": {
+      "phone": "3211"
+    }
+  },
+  {
+    "menu": {
+      "buttons": [
+        [
+          {
+            "caption": "Price",
+            "code": "_price",
+            "type": "contact"
+          },
+          {
+            "caption": "Price",
+            "code": "_price",
+            "type": "contact"
+          }
+        ],
+        [
+          {
+            "caption": "Price",
+            "code": "_price",
+            "type": "contact"
+          },
+          {
+            "caption": "Price",
+            "code": "_price",
+            "type": "contact"
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "recvMessage": {
+      "set": "response",
+      "timeout": 60
+    }
+  },
+  {
+    "export": [
+      "Мова спілкування",
+      "knowledge_base",
+      "contact_phone"
+    ]
+  },
+  {
+    "trigger": {
+      "disconnected": [
+        {
+          "log": "test disconected - OK"
+        },
+        {
+          "sendText": "test disconnected - ERR"
+        }
+      ]
+    }
+  },
+  {
+    "log": "${start_message}"
+  },
+  {
+    "sendText": "Купи слона"
+  },
+  {
+    "recvMessage": {
+      "set": "response",
+      "timeout": 60
+    }
+  },
+  {
+    "switch": {
+      "case": {
+        "1": [
+          {
+            "bridge": {
+              "messages": [
+                {
+                  "sendText": "test disconnected - ERR"
+                }
+              ],
+              "timeout": 20,
+              "userId": 10
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "2": [
+          {
+            "bridge": {
+              "timeout": 10,
+              "userId": 3
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "3": [
+          {
+            "bridge": {
+              "timeout": 20,
+              "userId": 8438
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "4": [
+          {
+            "bridge": {
+              "timeout": 60,
+              "userId": 128
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "5": [
+          {
+            "bridge": {
+              "timeout": 60,
+              "userId": 8454
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "7": [
+          {
+            "sendFile": {
+              "url": "https://dev.webitel.com/any/file/20127/download?domain_id=1&expires=1607620076243&signature=6aa35c8c5e21d51c3837c54f5a97a72d747c975356c724a0b8aad18200579e54028ad16509ab33d173fe74df4fc2849c5148baea63ba551c05801d7ac88ca65c",
+              "url!": "https://bipbap.ru/wp-content/uploads/2017/09/195_rrrre-1920-1.jpg?aaa=1&bb=2"
+            }
+          },
+          {
+            "goto": "top"
+          }
+        ],
+        "22": [
+          {
+            "bridge": {
+              "timeout": 30,
+              "userId": 8275
+            }
+          },
+          {
+            "sendText": "end bridge"
+          },
+          {
+            "goto": "end"
+          }
+        ],
+        "1112": [
+          {
+            "sendText": "7895"
+          },
+          {
+            "goto": "top"
+          }
+        ],
+        "default": [
+          {
+            "sendText": "всі кажуть: ${response}, а ти купи!!!"
+          },
+          {
+            "goto": "top"
+          }
+        ],
+        "exit": [
+          {
+            "break": true
+          }
+        ],
+        "queue": [
+          {
+            "joinQueue": {
+              "bucket_id1": 1,
+              "priority": 100,
+              "queue": {
+                "id": 1
+              },
+              "timers1": [
+                {
+                  "actions": [],
+                  "interval": 1,
+                  "tries": 20
+                }
+              ]
+            }
+          }
+        ],
+        "пока": [
+          {
+            "sendText": "покакаєш вдома!"
+          },
+          {
+            "break": true
+          }
+        ]
+      },
+      "variable": "${response}"
+    }
+  },
+  {
+    "sendText": "Звертайтайся!",
+    "tag": "end"
+  }
+]

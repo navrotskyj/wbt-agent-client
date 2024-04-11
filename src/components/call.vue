@@ -5,6 +5,8 @@
                 <div  v-if="call.queue" class="overline mb-4">{{call.queue.queue_name}}</div>
                 <v-list-item-title class="headline mb-1">Client: {{call.displayName}}</v-list-item-title>
                 <v-list-item-subtitle>Phone: {{call.displayNumber}}</v-list-item-subtitle>
+                <v-list-item-subtitle>ContactId: {{call.contactId}}</v-list-item-subtitle>
+                <v-list-item-subtitle>HideContact: {{call.hideContact}}</v-list-item-subtitle>
             </v-list-item-content>
 
 <!--            <div class="wbt-incoming-video">-->
@@ -22,7 +24,7 @@
             >
             </v-list-item-avatar>
         </v-list-item>
-        <video v-if="call.peerStreams"  :srcObject.prop="call.peerStreams[0]" class="wbt-incoming-video" autoplay />
+        <video v-if="call.peerStreams" style="display: none" :srcObject.prop="call.peerStreams[0]" class="wbt-incoming-video" autoplay />
 
         <v-card-actions>
             <v-btn color="error" v-show="call.allowHangup" @click="call.hangup()">
@@ -78,7 +80,7 @@
                         </v-row>
                     </v-container>
 
-                    <v-container v-if="call.memberCommunication">
+                    <v-container v-if="call.memberCommunication && false">
                         <v-row align="center">
                             <v-col class="d-flex" cols="12" sm="6">
                                 <v-text-field
@@ -120,43 +122,33 @@
             </v-row>
 
             <v-row v-if="call.allowReporting" no-gutters>
+                <div v-if="call.task.processingTimeoutAt">{{new Date(call.task.processingTimeoutAt)}}</div>
                 <v-textarea
                         v-model="call.postProcessData.description"
                         label="Description"
                 ></v-textarea>
             </v-row>
 
-            <v-timeline>
+            <v-row v-if="call.task && call.task.form && call.task.form.view" >
+              <v-card width="600px">
+                <v-list-item v-for="option in call.task.form.view.components">
+                  <v-list-item-content>
+                    <component :is="option.type" v-model="option.value" v-bind="option.propsData">{{option.text}}</component>
+                  </v-list-item-content>
+                </v-list-item>
+<div class="/Da"></div>
+                <v-card-actions>
+                  <v-btn
+                      text
+                      v-for="a in call.task.form.actions"
+                      @click="call.task.formAction(a, postFields(call.task.form.view.components))"
+                  >
+                    {{a}}
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
 
-                <v-timeline-item
-                        color="green lighten-1"
-                        left
-                        v-for="(v, k) in history"
-                >
-                    <template v-slot:opposite>
-        <span
-                :class="`headline font-weight-bold`" style="max-width: 200px;"
-        >{{new Date(+v.joined_at).toLocaleString()}}</span>
-                    </template>
-                    <v-card
-                            class="mx-auto"
-                    >
-                        <v-list-item three-line>
-                            <v-list-item-content>
-                                <div class="overline mb-4">{{v.result}}</div>
-                                <v-list-item-title class="headline mb-1">{{v.destination.destination}}</v-list-item-title>
-                                <v-list-item-subtitle v-if="v.agent">{{v.agent.name}}</v-list-item-subtitle>
-                                <v-list-item-subtitle>{{v.description}}</v-list-item-subtitle>
-                            </v-list-item-content>
-
-                            <v-icon
-                                    tile
-                                    size="42"
-                            >mdi-phone</v-icon>
-                        </v-list-item>
-                    </v-card>
-                </v-timeline-item>
-            </v-timeline>
+            </v-row>
 
         </v-card-text>
     </v-card>
@@ -205,6 +197,13 @@
             await this.fetchData()
         },
         methods: {
+            postFields(components) {
+              let res = {}
+              for (let f of components) {
+                res[f.name || f.id] = f.value || ""
+              }
+              return res
+            },
             validate () {
                 this.$refs.form.validate()
             },

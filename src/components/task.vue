@@ -3,17 +3,14 @@
     <v-list-item three-line>
       <v-list-item-content>
         <div  v-if="task.queue" class="overline mb-4">{{task.queue.queue_name}}</div>
+        <div  class="overline mb-4">{{task.state}}</div>
         <v-list-item-title class="headline mb-1">Client: {{task.displayName}}</v-list-item-title>
-        <v-list-item-subtitle>Phone: {{task.displayNumber}}</v-list-item-subtitle>
+        <v-list-item-subtitle>Destination: {{task.communication.destination}}</v-list-item-subtitle>
       </v-list-item-content>
 
       <div class="wbt-incoming-video">
 
       </div>
-
-      <span v-show="task.transcript">
-          Transcript: {{task.transcript}}
-      </span>
 
       <v-list-item-avatar
           tile
@@ -44,7 +41,7 @@
             cols="12"
             sm="6"
         >
-          <v-text-field disabled1 v-for="(v, k) in task.variables"
+          <v-text-field disabled1 v-for="(v, k) in task.distribute.variables"
                         :label="k"
                         :value="v"
           ></v-text-field>

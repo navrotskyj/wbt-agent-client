@@ -93,10 +93,57 @@
                         <v-list-item-title class="headline mb-1">ans: {{task.answeredAt}}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-
-                <!--<v-card-actions class="wbt-list-btn-groups">-->
-                <!--</v-card-actions>-->
             </v-card>
+
+              <v-card v-for="(waiting, index) in waitingListCalls" active :key="`waiting-calls-${index}`"
+                      class="mx-auto"
+                      max-width="344"
+              >
+                <v-list-item three-line >
+                  <v-list-item-icon>
+                    <v-icon>mdi-chat</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content >
+<!--                    <div class="overline">{{waiting.communication && waiting.communication.destination}}</div>-->
+<!--                    <v-list-item-title class="headline mb-1">id: {{waiting.communication.destination}}</v-list-item-title>-->
+<!--                    <v-list-item-title class="headline mb-1">queue: {{waiting.queue.name}}</v-list-item-title>-->
+                    <v-list-item-title class="headline mb-1">wait / deadline: {{waiting.wait}} / {{waiting.deadline}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-card-actions>
+                  <v-btn
+                      text
+                      @click="intercept(waiting.attemptId)"
+                  >
+                    Intercept
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+
+              <v-card v-for="(waiting, index) in waitingListChats" active :key="`waiting-chats-${index}`"
+                      class="mx-auto"
+                      max-width="344"
+              >
+                <v-list-item three-line >
+                  <v-list-item-icon>
+                    <v-icon>mdi-chat</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content >
+<!--                    <div class="overline">{{waiting.communication && waiting.communication.destination}}</div>-->
+                    <v-list-item-title class="headline mb-1">id: {{waiting.communication.destination}}</v-list-item-title>
+                    <v-list-item-title class="headline mb-1">queue: {{waiting.queue.name}}</v-list-item-title>
+                    <v-list-item-title class="headline mb-1">wait / deadline: {{waiting.wait}} / {{waiting.deadline}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-card-actions>
+                  <v-btn
+                      text
+                      @click="intercept(waiting.attempt_id)"
+                  >
+                    Intercept
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
 
             </v-list-item-group>
         </v-navigation-drawer>
@@ -152,6 +199,7 @@
     import Agent from '../components/agent'
     import CreateCall from '../components/createCall'
     import Help from '../components/help'
+    import store from "@/store";
 
     function compare(a, b) {
         if (a.createdAt > b.createdAt) return -1;
@@ -195,9 +243,19 @@
             taskList() {
                 return this.$store.getters.taskList;
             },
+            waitingListCalls() {
+              return this.$store.getters['agent/waitingListCalls']
+            },
+            waitingListChats() {
+              return this.$store.getters['agent/waitingListChats']
+            },
         },
         methods: {
-            exit() {}
+            exit() {},
+            async intercept(id) {
+              debugger
+              await this.$store.dispatch('agent/intercept', id)
+            }
         }
     }
 </script>

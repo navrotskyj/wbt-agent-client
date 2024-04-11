@@ -61,6 +61,7 @@
         },
         methods: {
             setData() {
+              return;
                 this.getDataFromApi()
                     .then(({data}) => {
                             this.loading = false
@@ -82,10 +83,10 @@
                         })
             },
             getDataFromApi () {
+              return
                 this.loading = true
                 const { sortBy, sortDesc, page, itemsPerPage } = this.options
-
-
+                window.w = memberApi
                 return memberApi.searchAttemptsHistory(
                     page,
                     itemsPerPage,

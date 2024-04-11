@@ -4,25 +4,31 @@ const state = {
     id: null,
     status: null,
     onDemand: false,
-    channels: [],
+    channels: null,
     lastStatusChange: null,
-    queues: []
+    queues: [],
+    waitingList: null,
+    agent: null
 };
 
 const getters = {
     status: state => state.status,
+    waitingListCalls: state => state.agent&& state.agent.waitingListCalls,
+    waitingListChats: state => state.agent&& state.agent.waitingListChats,
     channels: state => state.channels,
     queues: state => state.queues,
     lastStatusChange: state => state.lastStatusChange,
 };
 
 const mutations = {
-    set: (state, {id, status, onDemand, channels, lastStatusChange}) => {
+    set: (state, agent) => {
+        const {id, status, onDemand, channels, lastStatusChange} = agent
         state.id = id
         state.status = status
         state.onDemand = onDemand
         state.channels = channels
         state.lastStatusChange = lastStatusChange
+        state.agent = agent
     },
     updateChannels: (state, channels) => {
         state.channels = channels
@@ -39,9 +45,13 @@ const mutations = {
 
 const actions = {
     async refreshQueues({ commit, state }, id) {
-        const agentStatistics = await agentApi.searchAgentInQueueStatistics(id)
-        commit('setQueues', agentStatistics.data.items)
+        // const agentStatistics = await agentApi.searchAgentInQueueStatistics(id)
+        // commit('setQueues', agentStatistics.data.items)
 
+    },
+
+    async intercept({ commit, state }, id) {
+        return state.agent.interceptAttempt(id)
     }
 }
 

@@ -55,6 +55,7 @@
         },
         methods: {
             setData() {
+              return;
                 this.getDataFromApi()
                     .then(({data}) => {
                             this.loading = false
