@@ -29,7 +29,7 @@
             <v-list-item
                     v-for="item in agents"
                     :key="item.id"
-                    @click=""
+                    @click="screen(item)"
             >
                 <v-list-item-avatar>
                     <v-icon large
@@ -69,15 +69,26 @@
                 items: [],
                 tabs: [
                     {
-                       tab: "Friends",
+                       tab: "Users",
                         items: []
                     }
                 ]
             }
         },
         async created() {
-            const res = await agentApi.searchAgent(1, 100)
+            const res = await agentApi.searchAgent(1, 100, undefined, undefined, undefined, [12,3429, 4727])
             this.agents = res.data.items
+        },
+        methods: {
+          screen(i) {
+           cli.spyScreen(
+               +i.user.id,
+               {
+                 iceServers: [],
+                 iceTransportPolicy: "all",
+               }
+           )
+          }
         }
     }
 </script>

@@ -6,7 +6,7 @@ import agentStore from './agent'
 import chatStore from './chat'
 import taskStore from './task'
 
-import {AgentStatus} from '../../webitel-sdk/src'
+import {AgentStatus} from '../webitel_sdk/src'
 
 const Store = new Vuex.Store({
     // strict: true,
@@ -33,6 +33,12 @@ const Store = new Vuex.Store({
         },
         agent(state) {
             return (state.client && state.client.agent)
+        },
+        sdk(state) {
+            return state.client
+        },
+        allSpyScreenSessions(state) {
+            return state.client ? state.client.allSpyScreenSessions() : null
         }
     },
     mutations: {

@@ -1,24 +1,16 @@
 import {Client, AgentServiceApi, Configuration, MemberServiceApi,
-    QueueServiceApi, CallActions, ContactsApiFactory, JobState, ChatActions} from "../../webitel-sdk/src";
+    QueueServiceApi, CallActions,  ChatActions} from "../webitel_sdk/src";
 
-// import {JobState} from '../../webitel-sdk/src'
 
-console.error(JobState)
 
 import store from '../store'
 import router from '../router'
-import {SipPhone} from '../../webitel-sdk/src/sip/webrtc'
+import {SipPhone} from '../webitel_sdk/src/sip/webrtc'
 
 export let client = null;
 
-// const apiC = new CallServiceApi();
-const apiCon = new ContactsApiFactory({}, '');
-// apiC.searchActiveCall(1,1,'','', [])
-const fields = ["name", "bla", "ble"]
-apiCon.searchContacts(1,1,'','',fields)
 
-
-let token = 'y813etikm3d93bg7qxdbt8y4yy'// localStorage.getItem('token');
+let token = localStorage.getItem('token');
 if (!token) {
     token = prompt("Please enter your token", "");
     localStorage.setItem('token', token);
@@ -41,6 +33,13 @@ function onIceStateChange(pc, event) {
         console.log(`${getName(pc)} ICE state: ${pc.iceConnectionState}`);
         console.log('ICE state change event: ', event);
     }
+}
+
+async function  a() {
+    await cli.request(`ss_invite`, {
+        to_user_id: 8535,
+        sdp: 'xxx'
+    })
 }
 
 const offerOptions = {
@@ -90,8 +89,12 @@ export async function openSocket() {
         // endpoint: "ws://10.10.10.25:10022",
         token,
         registerWebDevice: false,
-        debug: false,
+        debug: true,
         reconnect: true,
+        // applicationName: 'desc_track',
+        screenResolver: async () => {
+            return await navigator.mediaDevices.getDisplayMedia({audio:false})
+        }
     });
 
     window.cli = client;
@@ -205,7 +208,7 @@ export async function openSocket() {
     //         server: "https://dev.webitel.com/api/"
     //     }))
     // } else if (WEBCLIENT) {
-        client.registerCallClient(new SipPhone(await client.deviceConfig("webrtc"), true))
+    //     client.registerCallClient(new SipPhone(await client.deviceConfig("webrtc"), true))
     // } else {
     //     // No register
     // }
